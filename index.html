@@ -162,6 +162,7 @@ table.sc th{font-weight:600}
     <div class="pick" id="pickWait"></div>
     <div class="wcat">Livello</div><div class="chips" id="lvWait"></div><p class="small" id="lvWaitNote"></p>
     <div class="err" id="waitErr"></div>
+    <p class="small" id="netInfo"></p>
     <div class="row"><button class="btn" id="bReady" disabled>Iniziamo!</button><button class="btn soft" id="bBack">Indietro</button></div>
   </div></div>
 
@@ -178,6 +179,7 @@ table.sc th{font-weight:600}
     <div class="row"><button class="btn alt" id="bGoTo">✨ Vai dall’altro orsetto</button><button class="btn alt" id="bLvPick">📋 Cambia livello</button></div>
     <div class="chips" id="lvPause" style="display:none;margin-top:6px"></div>
     <p class="small">Se sei rimasto bloccato indietro, ti porta vicino all’altro.</p>
+    <p class="small" id="netInfo2"></p>
   </div></div>
 
   <div id="rotate">Gira il telefono in orizzontale per giocare ↻</div>
@@ -855,6 +857,9 @@ function renderWard(){
 function drawWardPrev(t){const c=$('wardPrev').getContext('2d');c.imageSmoothingEnabled=false;c.clearRect(0,0,46,46);const sp=sprites(wardChar,outfitOf(wardChar));const f=Math.floor(t*4)%4;c.drawImage(f===1?sp.w1:f===3?sp.w2:sp.stand,0,0)}
 $('bWard').onclick=()=>{audioInit();openWard()};
 $('bWardOk').onclick=()=>{mode='menu';showScreen('sMenu');refreshMenu()};
+function netText(){if(!nroom||!nroom.status)return '';const st=nroom.status();
+  return 'Collegamento — ponte: '+(st.mq?'✓ ('+st.mqName+')':(st.mqErr?'✗ '+st.mqErr:'…'))+' · diretto: '+(st.p2p?'✓':(st.peer?'in attesa':'…'))+' · altri giocatori visti: '+st.others}
+setInterval(()=>{const t=netText();if($('netInfo'))$('netInfo').textContent=t;if($('netInfo2'))$('netInfo2').textContent=t},1000);
 function genCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ';let s='';for(let i=0;i<4;i++)s+=A[Math.floor(Math.random()*A.length)];return s}
 $('bCreate').onclick=()=>{audioInit();solo=false;iCreated=true;joinRoom(genCode())};
 $('bJoin').onclick=()=>{audioInit();const v=$('codeIn').value.trim().toUpperCase();
@@ -1085,7 +1090,8 @@ function makePeerRoom(){
     const topic='atatalapapa/v1/'+code;
     const flushMq=()=>{mqTimer=null;if(!mq||!mqOk||closed)return;lastMq=Date.now();try{mq.publish(topic,JSON.stringify(packet()),{qos:0})}catch(e){}};
     const sendMq=force=>{if(!mq||!mqOk)return;const wait=110-(Date.now()-lastMq);if(force||wait<=0){if(mqTimer){clearTimeout(mqTimer);mqTimer=null}flushMq()}else if(!mqTimer)mqTimer=setTimeout(flushMq,wait)};
-    const startMq=i=>{if(!window.mqtt||closed||i>=BROKERS.length)return;let ok=false;
+    let mqName='',mqErr='';
+    const startMq=i=>{if(!window.mqtt||closed)return;if(i>=BROKERS.length){mqErr='nessun ponte raggiungibile';return}let ok=false;mqName=BROKERS[i].replace(/^wss?:\/\//,'').split(/[:/]/)[0];
       const c=window.mqtt.connect(BROKERS[i],{clientId:'al-'+myId+'-'+i,clean:true,keepalive:30,reconnectPeriod:3000,connectTimeout:7000});mq=c;
       const giveUp=setTimeout(()=>{if(!ok){try{c.end(true)}catch(e){}if(mq===c){mq=null;startMq(i+1)}}},8000);
       c.on('connect',()=>{ok=true;clearTimeout(giveUp);mqOk=true;c.subscribe(topic,{qos:0});sendMq(true)});
@@ -1112,6 +1118,7 @@ function makePeerRoom(){
         for(const c of conns.values()){try{if(c.open)c.send(pk)}catch(e){}}sendMq(false);return Promise.resolve()},
       onPeers(h,onErr){handlers.push(h);if(onErr)errs.push(onErr);setTimeout(fire,0);return()=>{const i=handlers.indexOf(h);if(i>=0)handlers.splice(i,1)}},
       peers:list,connected:()=>mqOk||conns.size>0,
+      status:()=>({mq:mqOk,mqName,mqErr,p2p:conns.size,peer:!!(peer&&peer.open),host:isHost,others:remotes.size}),
       async leave(){closed=true;clearInterval(hb);const bye=JSON.stringify({id:myId,bye:1});
         try{if(mq&&mqOk)mq.publish(topic,bye)}catch(e){}for(const c of conns.values())try{c.send({id:myId,bye:1});c.close()}catch(e){}
         setTimeout(()=>{try{mq&&mq.end(true)}catch(e){}try{peer&&peer.destroy()}catch(e){}},300)}};
