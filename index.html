@@ -93,7 +93,7 @@ table.sc th{font-weight:600}
   <div id="hud">
     <div class="box" id="hudMe"></div>
     <div class="box lvl" id="hudLvl"></div>
-    <div class="box" id="hudRight"><span id="hudOther"></span><button class="emo" data-e="heart" aria-label="Cuoricino">♥</button><button class="emo" data-e="kiss" aria-label="Bacino">💋</button><button class="emo" data-e="hug" aria-label="Abbraccio">🤗</button><button id="fsBtn" aria-label="Schermo intero">⛶</button><button id="muteBtn" aria-label="Audio">♪</button></div>
+    <div class="box" id="hudRight"><span id="hudOther"></span><button class="emo" data-e="heart" aria-label="Cuoricino">♥</button><button class="emo" data-e="kiss" aria-label="Bacino">💋</button><button class="emo" data-e="hug" aria-label="Abbraccio">🤗</button><button id="pauseBtn" aria-label="Pausa">⏸</button><button id="fsBtn" aria-label="Schermo intero">⛶</button><button id="muteBtn" aria-label="Audio">♪</button></div>
   </div>
   <div id="touch">
     <div class="tb" id="bL" data-k="left">◀</div>
@@ -173,6 +173,8 @@ table.sc th{font-weight:600}
   <div class="screen" id="sPause"><div class="card">
     <h2>Pausa</h2>
     <div class="row"><button class="btn" id="bResume">Continua</button><button class="btn soft" id="bQuit">Torna al menu</button></div>
+    <div class="row"><button class="btn alt" id="bGoTo">✨ Vai dall’altro orsetto</button></div>
+    <p class="small">Se sei rimasto bloccato indietro, ti porta vicino all’altro.</p>
   </div></div>
 
   <div id="rotate">Gira il telefono in orizzontale per giocare ↻</div>
@@ -369,18 +371,30 @@ const isTouch=('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches
 
 // ---------- input ----------
 const keys={left:false,right:false,jump:false,swap:false,ab:false};
+// tastiera e touch tenuti separati: nessuno dei due può "bloccare" l'altro
+const kb={},tk={};
+function mergeKeys(){for(const k in keys)keys[k]=!!(kb[k]||tk[k])}
+function resetInput(){for(const k in kb)kb[k]=false;for(const k in tk)tk[k]=false;mergeKeys();document.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'))}
 const KM={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'jump',KeyW:'jump',ArrowUp:'jump',Tab:'swap',KeyE:'swap',KeyK:'ab',ShiftLeft:'ab',ShiftRight:'ab',ArrowDown:'ab',KeyS:'ab'};
-addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||mode!=='play')return;const k=KM[e.code];if(k){keys[k]=true;e.preventDefault()}if(e.code==='Escape'||e.code==='KeyP')togglePause();if(e.code==='Digit1')sendEmote('heart');if(e.code==='Digit2')sendEmote('kiss');if(e.code==='Digit3')sendEmote('hug')});
-addEventListener('keyup',e=>{const k=KM[e.code];if(k){keys[k]=false;e.preventDefault()}});
-addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
-const ptrs=new Map();
-function ptrUpdate(e){const el=document.elementFromPoint(e.clientX,e.clientY);const k=el&&el.dataset?el.dataset.k:null;ptrs.set(e.pointerId,k||null);syncTouch()}
-function syncTouch(){const on=new Set(ptrs.values());for(const b of document.querySelectorAll('.tb')){const k=b.dataset.k;const v=on.has(k);keys[k]=v;b.classList.toggle('on',v)}}
+addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||mode!=='play')return;const k=KM[e.code];if(k){kb[k]=true;mergeKeys();e.preventDefault()}if(e.code==='Escape'||e.code==='KeyP')togglePause();if(e.code==='Digit1')sendEmote('heart');if(e.code==='Digit2')sendEmote('kiss');if(e.code==='Digit3')sendEmote('hug')});
+addEventListener('keyup',e=>{const k=KM[e.code];if(k){kb[k]=false;mergeKeys();e.preventDefault()}});
+addEventListener('blur',resetInput);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)resetInput()});
+// touch: ad ogni evento ricalcolo i tasti premuti da TUTTE le dita sullo schermo (niente stati rimasti appesi)
+function touchKeyAt(x,y){const el=document.elementFromPoint(x,y);const b=el&&el.closest?el.closest('.tb'):null;return b?b.dataset.k:null}
+function syncTouches(list){const on=new Set();for(const t of list){const k=touchKeyAt(t.clientX,t.clientY);if(k)on.add(k)}
+  for(const b of document.querySelectorAll('.tb')){const k=b.dataset.k,v=on.has(k);tk[k]=v;b.classList.toggle('on',v)}mergeKeys()}
 const tz=$('touch');
-tz.addEventListener('pointerdown',e=>{e.preventDefault();ptrUpdate(e);audioInit()});
-addEventListener('pointermove',e=>{if(ptrs.has(e.pointerId))ptrUpdate(e)});
-const ptrEnd=e=>{if(ptrs.delete(e.pointerId))syncTouch()};
-addEventListener('pointerup',ptrEnd);addEventListener('pointercancel',ptrEnd);
+tz.addEventListener('touchstart',e=>{e.preventDefault();audioInit();syncTouches(e.touches)},{passive:false});
+document.addEventListener('touchmove',e=>{if(mode==='play'&&e.touches.length)syncTouches(e.touches)},{passive:true});
+document.addEventListener('touchend',e=>syncTouches(e.touches),{passive:true});
+document.addEventListener('touchcancel',e=>syncTouches(e.touches),{passive:true});
+// mouse (computer): stessi pulsanti cliccabili
+let mouseKey=null;
+tz.addEventListener('mousedown',e=>{const k=touchKeyAt(e.clientX,e.clientY);if(k){mouseKey=k;tk[k]=true;mergeKeys();audioInit()}});
+addEventListener('mouseup',()=>{if(mouseKey){tk[mouseKey]=false;mouseKey=null;mergeKeys()}});
+// sicurezza: se non c'è nessun dito sullo schermo da un po', rilascio tutto
+let lastTouchEnd=0;document.addEventListener('touchend',e=>{if(!e.touches.length)lastTouchEnd=performance.now()},{passive:true});
 
 // ---------- audio ----------
 let AC=null,muted=!!store.get('muted'),musicT=0,step=0,musicTimer=null;
@@ -442,7 +456,7 @@ function startLevel(i){
   $('touch').style.display=isTouch?'block':'none';$('bS').style.display=solo?'flex':'none';setAbLabel();
   if(!solo)store.set('session',{code,char:myChar,lv:i,totals});
   updateHud();
-  idleT=0;farT=0;ambT=18+Math.random()*10;hugDone=false;letterGot=new Set();myLetter=(lettersFor(other(myChar))[i]||'').slice(0,220);for(const [,bb] of bubs)bb.until=0;
+  idleT=0;farT=0;ambT=30+Math.random()*15;hugDone=false;letterGot=new Set();myLetter=(lettersFor(other(myChar))[i]||'').slice(0,220);for(const [,bb] of bubs)bb.until=0;
   setTimeout(()=>{if(mode!=='play')return;const b=solo?bears.find(x=>x.c==='atata'):(myChar==='atata'||!partner?bears[0]:null);if(b){const r=Math.random();if(r<.2)sayPair(b,'amb',BABY);else if(r<.75)sayPair(b,'start');else say(b,'start')}},900);
 }
 let idleT=0,farT=0,cudT=0,protCd=6,ambT=20;
@@ -459,7 +473,7 @@ function tileAt(tx,ty){if(ty<0||ty>=ROWS)return '.';if(tx<0||tx>=L.w)return '#';
 let pressed={};
 function computePlates(){
   const p={};const all=allBodies();
-  for(const b of all){const tx=Math.floor((b.x+b.w/2)/T),ty=Math.floor((b.y+b.h-1)/T);const t=tileAt(tx,ty);if(t==='1'||t==='2'||t==='3'||t==='4'){if(!pressed[t]&&!p[t]){SFX.plate();if(isMine(b)&&t!=='4')say(b,'plate',.5)}p[t]=true}}
+  for(const b of all){const tx=Math.floor((b.x+b.w/2)/T),ty=Math.floor((b.y+b.h-1)/T);const t=tileAt(tx,ty);if(t==='1'||t==='2'||t==='3'||t==='4'){if(!pressed[t]&&!p[t]){SFX.plate();if(isMine(b)&&t!=='4')say(b,'plate',.3)}p[t]=true}}
   pressed=p;
 }
 function gateOpen(ch){return !!pressed[GATE_OF[ch]]}
@@ -508,14 +522,14 @@ function moveY(b,dt,ign){
   // nuvolette attraversabili
   if(b.vy>=0){const x0=Math.floor(b.x/T),x1=Math.floor((b.x+b.w-1)/T),ty=Math.floor((ny+b.h)/T);for(let tx=x0;tx<=x1;tx++){if(tileAt(tx,ty)==='-'&&prevBottom<=ty*T+1){ny=ty*T-b.h;b.vy=0;b.on=true;break}}}
   // testa dell'altro orsetto = piattaforma
-  if(b.vy>=0){for(const o of allBodies()){if(o===b)continue;const top=o.y;if(prevBottom<=top+1&&ny+b.h>=top&&b.x+b.w>o.x+2&&b.x<o.x+o.w-2){if(b.vy>60&&isMine(b))say(b,'head',.6);ny=top-b.h;b.vy=0;b.on=true}}}
+  if(b.vy>=0){for(const o of allBodies()){if(o===b)continue;const top=o.y;if(prevBottom<=top+1&&ny+b.h>=top&&b.x+b.w>o.x+2&&b.x<o.x+o.w-2){if(b.vy>60&&isMine(b))say(b,'head',.3);ny=top-b.h;b.vy=0;b.on=true}}}
   b.y=ny;
 }
 function dashHit(b){
   const fx=b.face>0?b.x+b.w+2:b.x-2;const tx=Math.floor(fx/T);let hit=false;
   for(let ty=Math.floor(b.y/T);ty<=Math.floor((b.y+b.h-.001)/T);ty++){if(tileAt(tx,ty)==='X'&&!BROKEN.has(tx+'_'+ty)){
     for(let y=0;y<ROWS;y++)if(tileAt(tx,y)==='X'&&!BROKEN.has(tx+'_'+y)){b.br.add(tx+'_'+y);BROKEN.add(tx+'_'+y);burst(tx*T+8,y*T+8,'#c9a27a',5)}hit=true}}
-  if(hit){SFX.crash();shake=.25;b.dash=0;b.vx=-b.face*60;if(isMine(b))say(b,'dash',.8)}
+  if(hit){SFX.crash();shake=.25;b.dash=0;b.vx=-b.face*60;if(isMine(b))say(b,'dash',.5)}
   const t=Date.now()/1000,sq=squashedSet();
   for(const e of L.ents){if(sq.has(e.id))continue;const p=entPos(e,t);if(b.x-3<p.x+p.w&&b.x+b.w+3>p.x&&b.y<p.y+p.h&&b.y+b.h>p.y){b.sq.add(e.id);SFX.squash();burst(p.x+p.w/2,p.y+p.h/2,'#ffffff',8)}}
 }
@@ -526,7 +540,7 @@ function hurt(b,fell){
   if(b.hearts>0){b.hearts--;burst(b.x+6,b.y,'#e8475f',6)}
   if(fell){b.x=b.cp.x;b.y=b.cp.y;b.vx=0;b.vy=0}else{b.vx=-b.face*140;b.vy=-220;b.on=false}b.inv=1.5;
   if(b===me())toast(fell?'Oops! Sei caduto… si riparte dal checkpoint.':'Ahi! Hai perso un cuoricino.',1.8);
-  if(isMine(b))setTimeout(()=>say(b,'hurt',.8),300);
+  if(isMine(b))setTimeout(()=>say(b,'hurt',.45),300);
 }
 
 // ---------- nemici (moto deterministico: uguale sui due dispositivi) ----------
@@ -545,7 +559,7 @@ function checkEnemies(b,t){
   for(const e of L.ents){if(sq.has(e.id))continue;const p=entPos(e,t);
     if(b.x<p.x+p.w&&b.x+b.w>p.x&&b.y<p.y+p.h&&b.y+b.h>p.y){
       if(b.dash>0){continue}
-      if(b.vy>40&&b.y+b.h-p.y<9){b.sq.add(e.id);b.vy=-JUMP*.75;SFX.squash();burst(p.x+p.w/2,p.y+p.h/2,'#ffffff',8);if(b===me())toast({bee:'Ape brontolona sistemata!',hog:'Riccio spinoso sistemato!',ghost:'Fantasmino scacciato! Buuu!',pump:'Zucca schiacciata!'}[e.t],1.2);if(isMine(b))say(b,'squash',.6)}
+      if(b.vy>40&&b.y+b.h-p.y<9){b.sq.add(e.id);b.vy=-JUMP*.75;SFX.squash();burst(p.x+p.w/2,p.y+p.h/2,'#ffffff',8);if(b===me())toast({bee:'Ape brontolona sistemata!',hog:'Riccio spinoso sistemato!',ghost:'Fantasmino scacciato! Buuu!',pump:'Zucca schiacciata!'}[e.t],1.2);if(isMine(b))say(b,'squash',.35)}
       else hurt(b,false);
     }}
 }
@@ -553,9 +567,10 @@ function checkItems(b){
   const col=collectedSet();
   const x0=Math.floor(b.x/T),x1=Math.floor((b.x+b.w-1)/T),y0=Math.floor(b.y/T),y1=Math.floor((b.y+b.h-1)/T);
   for(let ty=y0;ty<=y1;ty++)for(let tx=x0;tx<=x1;tx++){const t=tileAt(tx,ty),id=tx+'_'+ty;
-    if((t==='h'||t==='c')&&!col.has(id)){b.col.add(id);if(t==='h'){b.honey++;SFX.honey();burst(tx*T+8,ty*T+8,'#f2a81d',6)}else{b.hearts++;SFX.heart();burst(tx*T+8,ty*T+8,'#e8475f',10);if(isMine(b))say(b,'heart',.7)}}
+    if((t==='h'||t==='c')&&!col.has(id)){b.col.add(id);if(t==='h'){b.honey++;SFX.honey();burst(tx*T+8,ty*T+8,'#f2a81d',6)}else{b.hearts++;SFX.heart();burst(tx*T+8,ty*T+8,'#e8475f',10);if(isMine(b))say(b,'heart',.35)}}
     if(t==='M'&&b===me()&&!letterGot.has(lvIdx)){letterGot.add(lvIdx);burst(tx*T+8,ty*T+8,'#f39ab8',12);setTimeout(()=>{if(mode==='play')openLetter(b)},250)}
-    if(t==='K'&&!b.cpSet.has(id)){b.cpSet.add(id);b.cp={x:tx*T+2,y:ty*T+2};SFX.cp();if(b===me())toast('Checkpoint!',1)}
+    if(t==='K'&&!b.cpSet.has(id)){b.cpSet.add(id);const cp={x:tx*T+2,y:ty*T+2};if(cp.x>b.cp.x)b.cp=cp;SFX.cp();if(b===me())toast('Checkpoint per tutti e due!',1.2);
+      if(solo)for(const o of bears)if(o!==b&&cp.x>o.cp.x){o.cp=cp;o.cpSet.add(id)}}
     if(t==='F'&&!b.goal){b.goal=true;b.vx=0;SFX.goal();burst(tx*T+8,ty*T,'#f5c542',14);
       const otherName=solo?CHARS[other(b.c)].name:(partner?CHARS[other(myChar)].name:'l’altro');
       if(b===me())toast('Traguardo! Ora aspetta '+otherName+'.',2.5);
@@ -638,27 +653,28 @@ const HW={'Oggi raccolgo più miele di te!':'Oggi raccolgo più caramelle di te!
  'Sei più dolce del miele':'Sei più dolce di una caramella','Dopo, prima il miele!':'Dopo, prima le caramelle!','Raccogliete miele e cuoricini':'Raccogliete caramelle e cuoricini'};
 function adapt(t){return (L&&L.theme==='halloween'&&HW[t])||t}
 function showBubble(key,target,text,c){if(!text)return;text=adapt(text);let bb=bubs.get(key);if(!bb){const el=document.createElement('div');el.className='bub';$('bubs').appendChild(el);bb={el};bubs.set(key,bb)}
-  bb.el.className='bub '+c;bb.el.textContent=text;bb.target=target;bb.until=performance.now()+2800;bb.el.style.display='block'}
+  bb.el.className='bub '+c;bb.el.textContent=text;bb.target=target;bb.until=performance.now()+Math.min(8000,3200+text.length*75);bb.el.style.display='block'}
 function bubKey(b){return b===remote?'remote':'b'+bears.indexOf(b)}
+let convCd=0;
 function say(b,key,chance){
-  if(!b||!LINES[key]||(chance&&Math.random()>chance))return false;const now=performance.now();if(b.sayCd&&now<b.sayCd)return false;
+  if(!b||!LINES[key]||(chance&&Math.random()>chance))return false;const now=performance.now();if(b.sayCd&&now<b.sayCd)return false;if(now<convCd)return false;convCd=now+14000;
   const text=pick(LINES[key][b.c]||['']);if(!text)return false;b.sayCd=now+4500;showBubble(bubKey(b),b,text,b.c);
-  if(solo){const o=bears.find(x=>x!==b);if(o)setTimeout(()=>{if(mode!=='play'&&mode!=='res')return;const r=pick(REPLY[key][o.c]||['']);if(r){o.sayCd=performance.now()+3000;showBubble(bubKey(o),o,r,o.c)}},1100)}
+  if(solo){const o=bears.find(x=>x!==b);if(o)setTimeout(()=>{if(mode!=='play'&&mode!=='res')return;const r=pick(REPLY[key][o.c]||['']);if(r){o.sayCd=performance.now()+3000;showBubble(bubKey(o),o,r,o.c)}},1800)}
   else{mySay={id:++sayN,t:text,r:key,ts:Date.now()};sendPresence(true)}
   return true;
 }
 function sayPair(b,kind,tbl){
-  tbl=tbl||(L&&TL[L.theme]);if(!b||!tbl)return false;const now=performance.now();if(b.sayCd&&now<b.sayCd)return false;
+  tbl=tbl||(L&&TL[L.theme]);if(!b||!tbl)return false;const now=performance.now();if(b.sayCd&&now<b.sayCd)return false;if(now<convCd)return false;convCd=now+14000;
   const arr=tbl[kind]&&tbl[kind][b.c];if(!arr)return false;const [t,r]=pick(arr);
   b.sayCd=now+4500;showBubble(bubKey(b),b,t,b.c);
-  if(solo){const o=bears.find(x=>x!==b);if(o)setTimeout(()=>{if(mode!=='play'&&mode!=='res')return;o.sayCd=performance.now()+3000;showBubble(bubKey(o),o,r,o.c)},1300)}
+  if(solo){const o=bears.find(x=>x!==b);if(o)setTimeout(()=>{if(mode!=='play'&&mode!=='res')return;o.sayCd=performance.now()+3000;showBubble(bubKey(o),o,r,o.c)},1900)}
   else{mySay={id:++sayN,t,rt:r,ts:Date.now()};sendPresence(true)}
   return true;
 }
 function onRemoteSay(sy){
   if(!sy||sy.id===lastRemoteSay||!remote)return;lastRemoteSay=sy.id;if(Date.now()-(sy.ts||0)>5000)return;
-  showBubble('remote',remote,sy.t,remote.c);
-  if((sy.rt||(sy.r&&REPLY[sy.r]))&&bears[0])setTimeout(()=>{if(mode!=='play'&&mode!=='res')return;const b=bears[0];const r=sy.rt||pick(REPLY[sy.r][b.c]||['']);if(!r)return;b.sayCd=performance.now()+3000;showBubble('b0',b,r,b.c);mySay={id:++sayN,t:r,ts:Date.now()};sendPresence(true)},1100);
+  showBubble('remote',remote,sy.t,remote.c);convCd=Math.max(convCd,performance.now()+12000);
+  if((sy.rt||(sy.r&&REPLY[sy.r]))&&bears[0])setTimeout(()=>{if(mode!=='play'&&mode!=='res')return;const b=bears[0];const r=sy.rt||pick(REPLY[sy.r][b.c]||['']);if(!r)return;b.sayCd=performance.now()+3000;showBubble('b0',b,r,b.c);mySay={id:++sayN,t:r,ts:Date.now()};sendPresence(true)},1800);
 }
 function updateBubbles(){const rc=cv.getBoundingClientRect(),wr=$('wrap').getBoundingClientRect(),k=rc.width/VW,now=performance.now();
   for(const [key,bb] of bubs){const t=bb.target;const vis=now<bb.until&&(mode==='play'||mode==='res'||mode==='pause'||mode==='letter')&&t&&(t!==remote||remote&&remote.vis);
@@ -715,7 +731,7 @@ function openLetter(b){
   if(solo)text=lettersFor(b.c)[lvIdx]||'';else text=(remote&&remote.lt)||'';
   const isDef=!text;if(isDef){text=DEF_LETTERS[lvIdx]||'Ti voglio bene ♥'}
   $('letTitle').textContent=isDef?'Una letterina per '+CHARS[b.c].name:'Una letterina da '+from+' ♥';$('letText').textContent=text;
-  SFX.goal();mode='letter';showScreen('sLetter');for(const k in keys)keys[k]=false;
+  SFX.goal();mode='letter';showScreen('sLetter');
 }
 $('bLetClose').onclick=()=>{mode='play';showScreen(null)};
 
@@ -747,7 +763,7 @@ function presenceState(){
   const ok=outKey(outfitOf(myChar));
   if(mode==='wait')return {c:myChar,st:'wait',rdy:ready,o:ok,sec:secSel?1:0};
   if(!b)return {c:myChar,st:mode,o:ok};
-  return {c:myChar,st:mode==='res'?'res':'play',rdy:ready,lv:lvIdx,x:Math.round(b.x*10)/10,y:Math.round(b.y*10)/10,vx:Math.round(b.vx),vy:Math.round(b.vy),f:b.face,g:b.goal?1:0,ho:b.honey,he:b.hearts,col:[...b.col],sq:[...b.sq],tot:totals[myChar]||0,inv:b.inv>0?1:0,br:[...b.br],gl:b.gl?1:0,ds:b.dash>0?1:0,o:ok,say:mySay,emo:myEmo,ab:abT,ko:b.ko>0?1:0,lt:myLetter};
+  return {c:myChar,st:mode==='res'?'res':'play',rdy:ready,lv:lvIdx,x:Math.round(b.x*10)/10,y:Math.round(b.y*10)/10,vx:Math.round(b.vx),vy:Math.round(b.vy),f:b.face,g:b.goal?1:0,ho:b.honey,he:b.hearts,col:[...b.col],sq:[...b.sq],tot:totals[myChar]||0,inv:b.inv>0?1:0,br:[...b.br],gl:b.gl?1:0,ds:b.dash>0?1:0,o:ok,cp:[Math.round(b.cp.x),Math.round(b.cp.y)],say:mySay,emo:myEmo,ab:abT,ko:b.ko>0?1:0,lt:myLetter};
 }
 function sendPresence(force){
   if(!nroom||solo)return;const now=performance.now();if(!force&&now-lastPresT<40)return;
@@ -763,6 +779,7 @@ function onPeers(ch){
   if(p){const s=p.presence;
     if(!remote||remote.peer!==p.peer)remote={peer:p.peer,x:s.x||0,y:s.y||0,w:12,h:14,vis:false};
     Object.assign(remote,{out:parseOut(s.c==='lapapa'?'lapapa':'atata',s.o),c:s.c,tx:s.x,ty:s.y,vx:s.vx||0,vy:s.vy||0,face:s.f||1,goal:!!s.g,honey:s.ho||0,hearts:s.he||0,col:new Set(s.col||[]),sq:new Set(s.sq||[]),lv:s.lv,st:s.st,rdy:!!s.rdy,tot:s.tot||0,inv:!!s.inv,br:new Set(s.br||[]),gl:!!s.gl,dash:s.ds?1:0,at:p.updatedAt});
+    if(Array.isArray(s.cp)&&s.lv===lvIdx&&bears[0]&&s.cp[0]>bears[0].cp.x){bears[0].cp={x:s.cp[0],y:s.cp[1]};const k=Math.floor(s.cp[0]/T)+'_'+Math.floor(s.cp[1]/T);bears[0].cpSet.add(k)}
     onRemoteSay(s.say);onRemoteEmo(s.emo);remote.abT=s.ab||0;if(s.ko&&!remote.ko&&mode==='play'){toast(CHARS[s.c].name+' è '+gx(s.c,'svenuto','svenuta')+'! Corri a '+gx(s.c,'salvarlo','salvarla')+' con un bacino 💋',4)}remote.ko=!!s.ko;remote.lt=typeof s.lt==='string'?s.lt.slice(0,220):'';
     if(Math.abs(remote.x-(s.x||0))>64||Math.abs(remote.y-(s.y||0))>64){remote.x=s.x||0;remote.y=s.y||0}
   }else remote=null;
@@ -786,7 +803,7 @@ addEventListener('pagehide',()=>{try{if(nroom)nroom.leave()}catch(e){}});
 function leaveRoom(){unsubs.forEach(u=>u());unsubs=[];if(nroom){nroom.leave().catch(()=>{});nroom=null}partner=null;remote=null;partnerWasHere=false}
 
 // ---------- schermate ----------
-function showScreen(id){for(const s of document.querySelectorAll('.screen'))s.style.display='none';if(id)$(id).style.display='flex'}
+function showScreen(id){resetInput();for(const s of document.querySelectorAll('.screen'))s.style.display='none';if(id)$(id).style.display='flex'}
 function pickUI(el,onPick,taken){
   el.innerHTML='';for(const c of ['atata','lapapa']){const b=document.createElement('button');b.className=(c===myChar?'sel ':'')+(taken===c?'taken':'');
     const cc=document.createElement('canvas');cc.width=46;cc.height=46;const x=cc.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(sprites(c,outfitOf(c)).stand,0,0);
@@ -838,6 +855,11 @@ $('bNext').onclick=()=>{
   startLevel(lvIdx+1)};
 function togglePause(){if(mode==='play'){mode='pause';showScreen('sPause')}else if(mode==='pause'){mode='play';showScreen(null)}}
 $('bResume').onclick=togglePause;
+$('pauseBtn').onclick=e=>{e.stopPropagation();togglePause()};
+$('bGoTo').onclick=()=>{const b=me();const o=solo?bears.find(x=>x!==b):(remote&&remote.vis?remote:null);
+  if(!b||!o){toast('L’altro orsetto non è in questo livello.',2.5);return}
+  b.x=Math.max(0,o.x-14);b.y=o.y-20;b.vx=0;b.vy=0;b.inv=2;b.ko=0;if(o.cp&&o.cp.x>b.cp.x)b.cp=o.cp;
+  mode='play';showScreen(null);floatAt(b,'✨',4);toast('Eccoti vicino a '+CHARS[o.c].name+'!',2)};
 $('bQuit').onclick=()=>{leaveRoom();playing=false;solo=false;mode='menu';$('hud').style.display='none';$('touch').style.display='none';showScreen('sMenu');refreshMenu()};
 $('hudLvl').style.pointerEvents='auto';$('hudLvl').onclick=togglePause;
 
@@ -981,19 +1003,19 @@ function update(dt){
   computePlates();BROKEN=brokenSet();if(shake>0)shake-=dt;
   bears.forEach((b,i)=>{stepBear(b,dt,i===active?keys:NOIN);checkItems(b);checkEnemies(b,t)});
   if(keys.left||keys.right||keys.jump||keys.ab)idleT=0;else idleT+=dt;
-  if(idleT>9){idleT=-6;if(Math.random()<.5)sayPair(me(),'amb',BABY);else say(me(),'idle')}
+  if(idleT>16){idleT=-20;if(Math.random()<.5)sayPair(me(),'amb',BABY);else say(me(),'idle')}
   const oth=solo?bears.find(x=>x!==me()):(remote&&remote.vis?remote:null);
-  if(oth&&!me().goal&&!oth.goal&&Math.abs(oth.x-me().x)>15*T){farT+=dt;if(farT>6){farT=-20;if(me().x<oth.x||solo)say(me(),'far')}}else if(farT>0)farT=0;
+  if(oth&&!me().goal&&!oth.goal&&Math.abs(oth.x-me().x)>15*T){farT+=dt;if(farT>6){farT=-40;if(me().x<oth.x||solo)say(me(),'far')}}else if(farT>0)farT=0;
   if(oth&&!me().goal){const d=Math.abs(oth.x-me().x);
-    if(d<20&&Math.abs(oth.y-me().y)<4&&Math.abs(me().vx)<5&&Math.abs(oth.vx||0)<5){cudT+=dt;if(cudT>2.5&&(Math.random()<.55?sayPair(me(),'amb',BABY):say(me(),'cuddle')))cudT=-25}else if(cudT>0)cudT=0;
-    if(d<90&&protCd<=0){const tt=Date.now()/1000,sq=squashedSet();for(const e of L.ents){if(sq.has(e.id))continue;const ep=entPos(e,tt);if(Math.abs(ep.x-oth.x)<34&&Math.abs(ep.y-oth.y)<24){if(say(me(),'protect',.7))protCd=14;break}}}}
+    if(d<20&&Math.abs(oth.y-me().y)<4&&Math.abs(me().vx)<5&&Math.abs(oth.vx||0)<5){cudT+=dt;if(cudT>2.5&&(Math.random()<.55?sayPair(me(),'amb',BABY):say(me(),'cuddle')))cudT=-50}else if(cudT>0)cudT=0;
+    if(d<90&&protCd<=0){const tt=Date.now()/1000,sq=squashedSet();for(const e of L.ents){if(sq.has(e.id))continue;const ep=entPos(e,tt);if(Math.abs(ep.x-oth.x)<34&&Math.abs(ep.y-oth.y)<24){if(say(me(),'protect',.5))protCd=14;break}}}}
   protCd-=dt;ambT-=dt;reviveCd-=dt;
   // bacino che salva
   if(solo){for(const b of bears)if(b.ko>0)for(const o of bears)if(o!==b&&!(o.ko>0)&&canRescue(o,b)){revive(b,true);o.inv=Math.max(o.inv,1.5);floatAt(o,'💋',1);toast('Bacino! ♥ '+CHARS[b.c].name+' è di nuovo in piedi',1.8)}}
   else if(remote&&remote.vis&&remote.ko&&!(me().ko>0)&&reviveCd<=0&&canRescue(me(),remote)){reviveCd=1.5;me().inv=Math.max(me().inv,1.5);myEmo={id:++emoN,k:'revive',ts:Date.now()};sendPresence(true);floatAt(me(),'💋',2);toast('Bacino! ♥',1.2)}
   // abbraccio (lato partner)
   if(!solo&&!hugDone&&remote&&remote.vis&&remote.abT&&Math.abs((remote.abT||0)-abT)<700&&Date.now()-abT<1500&&nearOther(me()))doHug(me(),remote);
-  if(ambT<=0&&!me().goal&&Math.abs(me().vx)>20){if(Math.random()<.4?sayPair(me(),'amb',BABY):sayPair(me(),'amb'))ambT=28+Math.random()*22;else ambT=3}
+  if(ambT<=0&&!me().goal&&Math.abs(me().vx)>20){if(Math.random()<.4?sayPair(me(),'amb',BABY):sayPair(me(),'amb'))ambT=50+Math.random()*35;else ambT=3}
   for(const h of L.hints){if(!hintsShown.has(h.x)&&me().x>h.x&&me().x<h.x+64){hintsShown.add(h.x);toast(h.text,4.5)}}
   for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.l-=dt}particles=particles.filter(p=>p.l>0);
   const target=Math.max(0,Math.min(L.w*T-VW,me().x+6-VW/2));cam+=(target-cam)*Math.min(1,dt*6);
