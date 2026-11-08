@@ -68,6 +68,7 @@ table.sc th{font-weight:600}
 .chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .chip{font:15px 'Fredoka',sans-serif;border:2px solid #ead6c8;background:#fff;border-radius:999px;padding:5px 11px;cursor:pointer;color:#3a2330}
 .chip.sel{border-color:#e8607f;background:#ffe9f0}
+.chip:disabled{opacity:.45;cursor:default}
 .bub{position:absolute;transform:translate(-50%,-100%);background:#fff;color:#3a2330;border-radius:12px;padding:4px 9px;font:600 13px 'Fredoka',sans-serif;white-space:nowrap;pointer-events:none;box-shadow:0 2px 0 rgba(58,35,48,.25);display:none;max-width:60vw}
 .bub:after{content:'';position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-top-color:#fff;border-bottom:0}
 .bub.atata{border:2px solid #c98a55}.bub.lapapa{border:2px solid #f39ab8}
@@ -109,7 +110,8 @@ table.sc th{font-weight:600}
     <h1>Atata &amp; Lapapa</h1>
     <p>Un'avventura per due orsetti. Scegli il tuo:</p>
     <div class="pick" id="pickMenu"></div>
-    <div id="onlineBox">
+    <div class="wcat">Livello</div><div class="chips" id="lvMenu"></div>
+    <div id="onlineBox" style="margin-top:8px">
       <div class="row"><button class="btn" id="bCreate">Crea partita</button></div>
       <div class="row" style="margin-top:6px"><input class="code" id="codeIn" maxlength="9" placeholder="CODICE" autocomplete="off"><button class="btn alt" id="bJoin">Entra</button></div>
       <div class="row" id="rejoinRow" style="display:none"><button class="btn soft" id="bRejoin"></button></div>
@@ -158,7 +160,7 @@ table.sc th{font-weight:600}
     <div class="bigcode" id="waitCode">----</div>
     <p id="waitMsg">Manda questo codice all'altro giocatore: deve aprire il gioco, scegliere l'orsetto e premere Entra.</p>
     <div class="pick" id="pickWait"></div>
-    <div class="row" id="secWaitRow" style="display:none"><button class="chip" id="bSecWait">🎃 Giochiamo il livello segreto</button></div>
+    <div class="wcat">Livello</div><div class="chips" id="lvWait"></div><p class="small" id="lvWaitNote"></p>
     <div class="err" id="waitErr"></div>
     <div class="row"><button class="btn" id="bReady" disabled>Iniziamo!</button><button class="btn soft" id="bBack">Indietro</button></div>
   </div></div>
@@ -173,7 +175,8 @@ table.sc th{font-weight:600}
   <div class="screen" id="sPause"><div class="card">
     <h2>Pausa</h2>
     <div class="row"><button class="btn" id="bResume">Continua</button><button class="btn soft" id="bQuit">Torna al menu</button></div>
-    <div class="row"><button class="btn alt" id="bGoTo">✨ Vai dall’altro orsetto</button></div>
+    <div class="row"><button class="btn alt" id="bGoTo">✨ Vai dall’altro orsetto</button><button class="btn alt" id="bLvPick">📋 Cambia livello</button></div>
+    <div class="chips" id="lvPause" style="display:none;margin-top:6px"></div>
     <p class="small">Se sei rimasto bloccato indietro, ti porta vicino all’altro.</p>
   </div></div>
 
@@ -761,9 +764,9 @@ function toast(msg,sec){const el=$('toast');el.textContent=msg;el.style.display=
 function presenceState(){
   const b=bears[0];
   const ok=outKey(outfitOf(myChar));
-  if(mode==='wait')return {c:myChar,st:'wait',rdy:ready,o:ok,sec:secSel?1:0};
+  if(mode==='wait')return {c:myChar,st:'wait',rdy:ready,o:ok,sel:selLv,host:iCreated?1:0};
   if(!b)return {c:myChar,st:mode,o:ok};
-  return {c:myChar,st:mode==='res'?'res':'play',rdy:ready,lv:lvIdx,x:Math.round(b.x*10)/10,y:Math.round(b.y*10)/10,vx:Math.round(b.vx),vy:Math.round(b.vy),f:b.face,g:b.goal?1:0,ho:b.honey,he:b.hearts,col:[...b.col],sq:[...b.sq],tot:totals[myChar]||0,inv:b.inv>0?1:0,br:[...b.br],gl:b.gl?1:0,ds:b.dash>0?1:0,o:ok,cp:[Math.round(b.cp.x),Math.round(b.cp.y)],say:mySay,emo:myEmo,ab:abT,ko:b.ko>0?1:0,lt:myLetter};
+  return {c:myChar,st:mode==='res'?'res':'play',rdy:ready,lv:lvIdx,x:Math.round(b.x*10)/10,y:Math.round(b.y*10)/10,vx:Math.round(b.vx),vy:Math.round(b.vy),f:b.face,g:b.goal?1:0,ho:b.honey,he:b.hearts,col:[...b.col],sq:[...b.sq],tot:totals[myChar]||0,inv:b.inv>0?1:0,br:[...b.br],gl:b.gl?1:0,ds:b.dash>0?1:0,o:ok,jump:jumpMsg,cp:[Math.round(b.cp.x),Math.round(b.cp.y)],say:mySay,emo:myEmo,ab:abT,ko:b.ko>0?1:0,lt:myLetter};
 }
 function sendPresence(force){
   if(!nroom||solo)return;const now=performance.now();if(!force&&now-lastPresT<40)return;
@@ -780,6 +783,8 @@ function onPeers(ch){
     if(!remote||remote.peer!==p.peer)remote={peer:p.peer,x:s.x||0,y:s.y||0,w:12,h:14,vis:false};
     Object.assign(remote,{out:parseOut(s.c==='lapapa'?'lapapa':'atata',s.o),c:s.c,tx:s.x,ty:s.y,vx:s.vx||0,vy:s.vy||0,face:s.f||1,goal:!!s.g,honey:s.ho||0,hearts:s.he||0,col:new Set(s.col||[]),sq:new Set(s.sq||[]),lv:s.lv,st:s.st,rdy:!!s.rdy,tot:s.tot||0,inv:!!s.inv,br:new Set(s.br||[]),gl:!!s.gl,dash:s.ds?1:0,at:p.updatedAt});
     if(Array.isArray(s.cp)&&s.lv===lvIdx&&bears[0]&&s.cp[0]>bears[0].cp.x){bears[0].cp={x:s.cp[0],y:s.cp[1]};const k=Math.floor(s.cp[0]/T)+'_'+Math.floor(s.cp[1]/T);bears[0].cpSet.add(k)}
+    if(s.jump&&s.jump.id!==lastJump){const fresh=Date.now()-s.jump.id<8000;lastJump=s.jump.id;
+      if(fresh&&(mode==='play'||mode==='res'||mode==='pause'||mode==='letter')&&s.jump.lv!==lvIdx&&LEVELS[s.jump.lv]){startLevel(s.jump.lv);toast(CHARS[s.c].name+' ha scelto: '+LEVELS[s.jump.lv].name,3)}}
     onRemoteSay(s.say);onRemoteEmo(s.emo);remote.abT=s.ab||0;if(s.ko&&!remote.ko&&mode==='play'){toast(CHARS[s.c].name+' è '+gx(s.c,'svenuto','svenuta')+'! Corri a '+gx(s.c,'salvarlo','salvarla')+' con un bacino 💋',4)}remote.ko=!!s.ko;remote.lt=typeof s.lt==='string'?s.lt.slice(0,220):'';
     if(Math.abs(remote.x-(s.x||0))>64||Math.abs(remote.y-(s.y||0))>64){remote.x=s.x||0;remote.y=s.y||0}
   }else remote=null;
@@ -787,7 +792,7 @@ function onPeers(ch){
   if(mode==='wait'&&p&&p.presence.c!==myChar){const ps=p.presence;const inGame=(ps.st==='play'||ps.st==='res'||ps.st==='pause')&&typeof ps.lv==='number';
     if(inGame||(ready&&ps.rdy)){const ses=store.get('session')||{};const rejoin=inGame&&!ready;
       totals=(rejoin&&ses.code===code&&ses.totals)?Object.assign({atata:0,lapapa:0},ses.totals):{atata:0,lapapa:0};
-      startLevel(inGame?ps.lv:((secSel||ps.sec)?SECRET:0));if(rejoin)toast('Rientrato nella partita!',2)}}
+      startLevel(inGame?ps.lv:chosenLevel());if(rejoin)toast('Rientrato nella partita!',2)}}
 }
 async function joinRoom(c){
   if(!room){$('menuErr').textContent='Il gioco online non è disponibile in questa finestra.';return}
@@ -796,7 +801,7 @@ async function joinRoom(c){
     nroom=await room.join('orsi-'+code.toLowerCase());
     unsubs.forEach(u=>u());unsubs=[nroom.onPeers(onPeers,e=>{toast(e.code==='offline'?'Non riesco a collegarmi a internet per il gioco online. Controlla la connessione.':'Connessione persa ('+e.code+')',5)})];
     ready=false;mode='wait';showScreen('sWait');$('waitCode').textContent=code;refreshWait();sendPresence(true);
-    store.set('session',Object.assign(store.get('session')||{},{code,char:myChar}));
+    store.set('session',Object.assign(store.get('session')||{},{code,char:myChar,host:iCreated}));
   }catch(e){$('menuErr').textContent=e&&e.code==='timeout'?'Il server di collegamento non risponde. Controlla internet e riprova.':'Non riesco a creare o trovare la partita. Riprova tra un attimo.'}
 }
 addEventListener('pagehide',()=>{try{if(nroom)nroom.leave()}catch(e){}});
@@ -810,18 +815,30 @@ function pickUI(el,onPick,taken){
     b.appendChild(cc);const s=document.createElement('span');s.textContent=CHARS[c].name;b.appendChild(s);
     b.onclick=()=>{audioInit();myChar=c;store.set('char',c);onPick()};el.appendChild(b)}
 }
-function refreshMenu(){pickUI($('pickMenu'),refreshMenu);$('secRow').style.display=store.get('secret')?'flex':'none';const ses=store.get('session');
+function refreshMenu(){pickUI($('pickMenu'),refreshMenu);$('secRow').style.display='none';lvChips($('lvMenu'),selLv,i=>{setSel(i);refreshMenu()});const ses=store.get('session');
   if(ses&&ses.code&&room){$('rejoinRow').style.display='flex';$('bRejoin').textContent='Rientra nella partita '+ses.code}else $('rejoinRow').style.display='none'}
-let secSel=false;
-$('bSecWait').onclick=()=>{secSel=!secSel;ready=false;refreshWait();sendPresence(true)};
+// ---------- scelta del livello ----------
+let iCreated=false,lastJump=0;
+function doneSet(){const a=store.get('done');return new Set(Array.isArray(a)?a:[])}
+function isUnlocked(i){if(i===0)return true;if(i>=MAIN)return !!store.get('secret');const d=doneSet();return d.has(i)||d.has(i-1)}
+let selLv=+(store.get('selLv')||0);if(!LEVELS[selLv]||!isUnlocked(selLv))selLv=0;
+function setSel(i){selLv=i;store.set('selLv',i)}
+function lvChips(el,cur,onPick,readonly){el.innerHTML='';const d=doneSet();
+  LEVELS.forEach((lv,i)=>{if(i>=MAIN&&!store.get('secret')&&!(readonly&&cur===i))return;const ok=isUnlocked(i)||(readonly&&cur===i);
+    const b=document.createElement('button');b.className='chip'+(i===cur?' sel':'');
+    b.textContent=(i>=MAIN?'🎃 Segreto':(i+1)+' · '+lv.name)+(d.has(i)?' ✓':ok?'':' 🔒');b.disabled=readonly||!ok;
+    if(!readonly&&ok)b.onclick=()=>{audioInit();SFX.plate();onPick(i)};el.appendChild(b)})}
+function chosenLevel(){if(!iCreated&&partner&&partner.presence.host&&typeof partner.presence.sel==='number'&&LEVELS[partner.presence.sel])return partner.presence.sel;return selLv}
+const secSel=false;
 function refreshWait(){
   if(mode!=='wait')return;const pc=partner&&partner.presence.c;
-  $('secWaitRow').style.display=store.get('secret')?'flex':'none';$('bSecWait').classList.toggle('sel',secSel);
+  const ro=!iCreated&&partner&&partner.presence.host;lvChips($('lvWait'),chosenLevel(),i=>{setSel(i);ready=false;refreshWait();sendPresence(true)},ro);
+  $('lvWaitNote').textContent=ro?'Il livello lo sceglie chi ha creato la partita.':'';
   pickUI($('pickWait'),()=>{ready=false;refreshWait();sendPresence(true)},pc);
   let msg,ok=false;
   if(!partner){msg='Manda questo codice all’altro giocatore. Puoi già iniziare da solo: entrerà nel tuo mondo appena scrive il codice e preme Entra.';ok=true}
   else if(pc===myChar)msg='Avete scelto lo stesso orsetto! Uno dei due cambi.';
-  else{msg=CHARS[pc].name+' è qui! '+(partner.presence.rdy?'È pronto/a: tocca a te.':'Premete entrambi "Iniziamo!".')+((secSel||partner.presence.sec)?' 🎃 Si gioca il livello segreto!':'');ok=true}
+  else{msg=CHARS[pc].name+' è qui! '+(partner.presence.rdy?'È pronto/a: tocca a te.':'Premete entrambi "Iniziamo!".')+' Livello: '+LEVELS[chosenLevel()].name+'.';ok=true}
   $('waitMsg').textContent=msg;$('bReady').disabled=!ok||ready;$('bReady').textContent=ready?'In attesa…':(partner?'Iniziamo!':'Inizia da solo');
 }
 let wardChar='atata';
@@ -839,22 +856,25 @@ function drawWardPrev(t){const c=$('wardPrev').getContext('2d');c.imageSmoothing
 $('bWard').onclick=()=>{audioInit();openWard()};
 $('bWardOk').onclick=()=>{mode='menu';showScreen('sMenu');refreshMenu()};
 function genCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ';let s='';for(let i=0;i<4;i++)s+=A[Math.floor(Math.random()*A.length)];return s}
-$('bCreate').onclick=()=>{audioInit();solo=false;joinRoom(genCode())};
+$('bCreate').onclick=()=>{audioInit();solo=false;iCreated=true;joinRoom(genCode())};
 $('bJoin').onclick=()=>{audioInit();const v=$('codeIn').value.trim().toUpperCase();
-  if(v===SECRET_CODE){store.set('secret',true);$('codeIn').value='';$('menuErr').textContent='';SFX.goal();refreshMenu();toast('🎃 Livello segreto sbloccato! Ora c’è anche nel menu e due cappelli nuovi nel guardaroba.',5);return}if(!/^[A-Z]{4}$/.test(v)){$('menuErr').textContent='Il codice è di 4 lettere.';return}solo=false;joinRoom(v)};
+  if(v===SECRET_CODE){store.set('secret',true);$('codeIn').value='';$('menuErr').textContent='';SFX.goal();refreshMenu();toast('🎃 Livello segreto sbloccato! Ora c’è anche nel menu e due cappelli nuovi nel guardaroba.',5);return}if(!/^[A-Z]{4}$/.test(v)){$('menuErr').textContent='Il codice è di 4 lettere.';return}solo=false;iCreated=false;joinRoom(v)};
 $('codeIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('bJoin').click()});
-$('bRejoin').onclick=()=>{audioInit();const s=store.get('session');if(s&&s.char)myChar=s.char;solo=false;joinRoom(s.code)};
+$('bRejoin').onclick=()=>{audioInit();const s=store.get('session');if(s&&s.char)myChar=s.char;solo=false;iCreated=!!s.host;joinRoom(s.code)};
 $('bSecret').onclick=()=>{audioInit();solo=true;leaveRoom();totals={atata:0,lapapa:0};startLevel(SECRET);toast(isTouch?'Usa ⇄ per cambiare orsetto.':'Premi Tab o E per cambiare orsetto.',3)};
-$('bSolo').onclick=()=>{audioInit();solo=true;leaveRoom();totals={atata:0,lapapa:0};startLevel(0);toast(isTouch?'Usa ⇄ per cambiare orsetto.':'Premi Tab o E per cambiare orsetto.',3)};
+$('bSolo').onclick=()=>{audioInit();solo=true;leaveRoom();totals={atata:0,lapapa:0};startLevel(selLv);toast(isTouch?'Usa ⇄ per cambiare orsetto.':'Premi Tab o E per cambiare orsetto.',3)};
 $('bReady').onclick=()=>{audioInit();ready=true;refreshWait();sendPresence(true);
-  if(!partner){totals={atata:0,lapapa:0};startLevel(secSel?SECRET:0);toast('Sei nel mondo! Quando l’altro entra con il codice '+code+' ti raggiunge qui ♥',4);return}
-  if(partner&&partner.presence.rdy&&partner.presence.c!==myChar){totals={atata:0,lapapa:0};startLevel((secSel||partner.presence.sec)?SECRET:0)}};
+  if(!partner){totals={atata:0,lapapa:0};startLevel(chosenLevel());toast('Sei nel mondo! Quando l’altro entra con il codice '+code+' ti raggiunge qui ♥',4);return}
+  if(partner&&partner.presence.rdy&&partner.presence.c!==myChar){totals={atata:0,lapapa:0};startLevel(chosenLevel())}};
 $('bBack').onclick=()=>{leaveRoom();mode='menu';showScreen('sMenu');refreshMenu()};
 $('bNext').onclick=()=>{
   if(lvIdx>=MAIN-1){totals={atata:0,lapapa:0};startLevel(0);return}
   startLevel(lvIdx+1)};
 function togglePause(){if(mode==='play'){mode='pause';showScreen('sPause')}else if(mode==='pause'){mode='play';showScreen(null)}}
 $('bResume').onclick=togglePause;
+$('bLvPick').onclick=()=>{const el=$('lvPause');if(el.style.display!=='none'){el.style.display='none';return}el.style.display='flex';
+  lvChips(el,lvIdx,i=>{el.style.display='none';if(!solo){jumpMsg={id:Date.now(),lv:i};}startLevel(i);if(!solo)sendPresence(true);toast('Livello: '+LEVELS[i].name+(solo?'':' — anche per l’altro orsetto'),2.5)})};
+let jumpMsg=null;
 $('pauseBtn').onclick=e=>{e.stopPropagation();togglePause()};
 $('bGoTo').onclick=()=>{const b=me();const o=solo?bears.find(x=>x!==b):(remote&&remote.vis?remote:null);
   if(!b||!o){toast('L’altro orsetto non è in questo livello.',2.5);return}
@@ -865,7 +885,7 @@ $('hudLvl').style.pointerEvents='auto';$('hudLvl').onclick=togglePause;
 
 function pts(h,c){return h+c*3}
 function showResults(){
-  capturePhoto();resShown=true;mode='res';const isSec=lvIdx>=MAIN;
+  capturePhoto();resShown=true;mode='res';const isSec=lvIdx>=MAIN;{const d=doneSet();if(!d.has(lvIdx)){d.add(lvIdx);store.set('done',[...d])}}
   let A,B;
   if(solo){A=bears.find(b=>b.c==='atata');B=bears.find(b=>b.c==='lapapa');A={c:'atata',honey:A.honey,hearts:A.hearts};B={c:'lapapa',honey:B.honey,hearts:B.hearts}}
   else{const m=bears[0];const r=remote||{honey:0,hearts:0};A={c:myChar,honey:m.honey,hearts:m.hearts};B={c:other(myChar),honey:r.honey,hearts:r.hearts}}
