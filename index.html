@@ -117,7 +117,7 @@ table.sc th{font-weight:600}
       <div class="row" id="rejoinRow" style="display:none"><button class="btn soft" id="bRejoin"></button></div>
     </div>
     <div class="err" id="menuErr"></div>
-    <div class="row"><button class="btn alt" id="bWard">✿ Guardaroba</button><button class="btn alt" id="bLetters">✉ Letterine</button><button class="btn alt" id="bAlbum">📷 Album</button></div>
+    <div class="row"><button class="btn alt" id="bWard">✿ Guardaroba</button><button class="btn alt" id="bLetters">✉ Letterine</button><button class="btn alt" id="bAlbum">📷 Album</button><button class="btn alt" id="bSave">💾 Salvataggio</button></div>
     <div class="row" id="secRow" style="display:none"><button class="btn" id="bSecret" style="background:#f28c28;box-shadow:0 4px 0 #b05a0a">🎃 Livello segreto (prova da solo)</button></div>
     <div class="row"><button class="btn soft" id="bFs">⛶ Schermo intero</button></div>
     <div class="row"><button class="btn soft" id="bSolo">Prova da solo (comandi tutti e due)</button></div>
@@ -153,6 +153,17 @@ table.sc th{font-weight:600}
     <div id="albBig"></div>
     <div class="alb" id="albGrid"></div>
     <div class="row"><button class="btn" id="bAlbOk">Indietro</button></div>
+  </div></div>
+
+  <div class="screen" id="sSave"><div class="card">
+    <h2>💾 Salvataggio</h2>
+    <p class="small">Questo codice contiene i livelli completati, i vestiti di Atata e Lapapa, le letterine e il livello segreto. Copialo e tienilo in una nota o in chat: se perdi i dati, o cambi telefono, lo incolli qui sotto e ritrovi tutto.</p>
+    <textarea id="saveOut" readonly style="width:100%;min-height:70px;font:12px monospace;border:2px solid #ead6c8;border-radius:10px;padding:6px"></textarea>
+    <div class="row"><button class="btn" id="bSaveCopy">Copia il codice</button></div>
+    <div class="wcat">Hai un codice? Incollalo qui</div>
+    <textarea id="saveIn" style="width:100%;min-height:60px;font:12px monospace;border:2px solid #ead6c8;border-radius:10px;padding:6px" placeholder="AL1:..."></textarea>
+    <div class="err" id="saveErr"></div>
+    <div class="row"><button class="btn alt" id="bSaveLoad">Carica salvataggio</button><button class="btn soft" id="bSaveOk">Indietro</button></div>
   </div></div>
 
   <div class="screen" id="sWait"><div class="card">
@@ -766,9 +777,9 @@ function toast(msg,sec){const el=$('toast');el.textContent=msg;el.style.display=
 function presenceState(){
   const b=bears[0];
   const ok=outKey(outfitOf(myChar));
-  if(mode==='wait')return {c:myChar,st:'wait',rdy:ready,o:ok,sel:selLv,host:iCreated?1:0};
+  if(mode==='wait')return {c:myChar,st:'wait',rdy:ready,o:ok,sel:selLv,host:iCreated?1:0,pr:myProg()};
   if(!b)return {c:myChar,st:mode,o:ok};
-  return {c:myChar,st:mode==='res'?'res':'play',rdy:ready,lv:lvIdx,x:Math.round(b.x*10)/10,y:Math.round(b.y*10)/10,vx:Math.round(b.vx),vy:Math.round(b.vy),f:b.face,g:b.goal?1:0,ho:b.honey,he:b.hearts,col:[...b.col],sq:[...b.sq],tot:totals[myChar]||0,inv:b.inv>0?1:0,br:[...b.br],gl:b.gl?1:0,ds:b.dash>0?1:0,o:ok,jump:jumpMsg,cp:[Math.round(b.cp.x),Math.round(b.cp.y)],say:mySay,emo:myEmo,ab:abT,ko:b.ko>0?1:0,lt:myLetter};
+  return {c:myChar,st:mode==='res'?'res':'play',rdy:ready,lv:lvIdx,x:Math.round(b.x*10)/10,y:Math.round(b.y*10)/10,vx:Math.round(b.vx),vy:Math.round(b.vy),f:b.face,g:b.goal?1:0,ho:b.honey,he:b.hearts,col:[...b.col],sq:[...b.sq],tot:totals[myChar]||0,inv:b.inv>0?1:0,br:[...b.br],gl:b.gl?1:0,ds:b.dash>0?1:0,o:ok,pr:myProg(),jump:jumpMsg,cp:[Math.round(b.cp.x),Math.round(b.cp.y)],say:mySay,emo:myEmo,ab:abT,ko:b.ko>0?1:0,lt:myLetter};
 }
 function sendPresence(force){
   if(!nroom||solo)return;const now=performance.now();if(!force&&now-lastPresT<40)return;
@@ -781,7 +792,7 @@ function onPeers(ch){
   if(p&&!partnerWasHere){toast((CHARS[p.presence.c]||{name:'L’altro'}).name+' è arrivato/a! ♥',2)}
   if(!p&&partnerWasHere&&mode!=='menu'){toast('L’altro giocatore si è disconnesso… se rientra con lo stesso codice riprendete.',4)}
   partnerWasHere=!!p;
-  if(p){const s=p.presence;
+  if(p){const s=p.presence;mergeProg(s.pr);
     if(!remote||remote.peer!==p.peer)remote={peer:p.peer,x:s.x||0,y:s.y||0,w:12,h:14,vis:false};
     Object.assign(remote,{out:parseOut(s.c==='lapapa'?'lapapa':'atata',s.o),c:s.c,tx:s.x,ty:s.y,vx:s.vx||0,vy:s.vy||0,face:s.f||1,goal:!!s.g,honey:s.ho||0,hearts:s.he||0,col:new Set(s.col||[]),sq:new Set(s.sq||[]),lv:s.lv,st:s.st,rdy:!!s.rdy,tot:s.tot||0,inv:!!s.inv,br:new Set(s.br||[]),gl:!!s.gl,dash:s.ds?1:0,at:p.updatedAt});
     if(Array.isArray(s.cp)&&s.lv===lvIdx&&bears[0]&&s.cp[0]>bears[0].cp.x){bears[0].cp={x:s.cp[0],y:s.cp[1]};const k=Math.floor(s.cp[0]/T)+'_'+Math.floor(s.cp[1]/T);bears[0].cpSet.add(k)}
@@ -860,6 +871,25 @@ $('bWardOk').onclick=()=>{mode='menu';showScreen('sMenu');refreshMenu()};
 function netText(){if(!nroom||!nroom.status)return '';const st=nroom.status();
   return 'Collegamento — ponte: '+(st.mq?'✓ ('+st.mqName+')':(st.mqErr?'✗ '+st.mqErr:'…'))+' · diretto: '+(st.p2p?'✓':(st.peer?'in attesa':'…'))+' · altri giocatori visti: '+st.others}
 setInterval(()=>{const t=netText();if($('netInfo'))$('netInfo').textContent=t;if($('netInfo2'))$('netInfo2').textContent=t},1000);
+// ---------- salvataggio ----------
+const SAVE_KEYS=['done','secret','selLv','outfit_atata','outfit_lapapa','letters_for_atata','letters_for_lapapa','char'];
+function makeSave(){const o={v:1};for(const k of SAVE_KEYS){const v=store.get(k);if(v!==null&&v!==undefined)o[k]=v}
+  const bytes=new TextEncoder().encode(JSON.stringify(o));let bin='';bytes.forEach(b=>bin+=String.fromCharCode(b));return 'AL1:'+btoa(bin)}
+function loadSave(code){code=(code||'').trim().replace(/\s+/g,'');if(!code.startsWith('AL1:'))throw 0;
+  const bin=atob(code.slice(4));const o=JSON.parse(new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0))));if(!o||o.v!==1)throw 0;
+  const d=doneSet();for(const x of (o.done||[]))if(LEVELS[x])d.add(x);store.set('done',[...d]);if(o.secret)store.set('secret',true);
+  for(const k of ['selLv','outfit_atata','outfit_lapapa','letters_for_atata','letters_for_lapapa','char'])if(o[k]!==undefined)store.set(k,o[k]);
+  if(o.char&&CHARS[o.char])myChar=o.char;selLv=+(store.get('selLv')||0);if(!LEVELS[selLv]||!isUnlocked(selLv))selLv=0;for(const k in SPRC)delete SPRC[k]}
+$('bSave').onclick=()=>{audioInit();mode='save';showScreen('sSave');$('saveOut').value=makeSave();$('saveErr').textContent='';$('saveIn').value=''};
+$('bSaveCopy').onclick=()=>{const t=$('saveOut');t.select();try{navigator.clipboard.writeText(t.value).then(()=>toast('Codice copiato ✓',2),()=>{document.execCommand('copy');toast('Codice copiato ✓',2)})}catch(e){try{document.execCommand('copy');toast('Codice copiato ✓',2)}catch(_){toast('Tieni premuto sul codice per copiarlo',3)}}};
+$('bSaveLoad').onclick=()=>{try{loadSave($('saveIn').value);SFX.goal();toast('Salvataggio caricato ♥',2.5);mode='menu';showScreen('sMenu');refreshMenu()}catch(e){$('saveErr').textContent='Questo codice non è valido: controlla di averlo incollato tutto.'}};
+$('bSaveOk').onclick=()=>{mode='menu';showScreen('sMenu');refreshMenu()};
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+// progressi condivisi con l'altro giocatore
+function myProg(){return {d:[...doneSet()],s:store.get('secret')?1:0}}
+function mergeProg(pr){if(!pr||!Array.isArray(pr.d))return;const d=doneSet();let ch=false;for(const x of pr.d)if(typeof x==='number'&&LEVELS[x]&&!d.has(x)){d.add(x);ch=true}
+  if(ch)store.set('done',[...d]);if(pr.s&&!store.get('secret')){store.set('secret',true);ch=true}
+  if(ch){if(mode==='wait')refreshWait();toast('Progressi sincronizzati con l’altro orsetto ♥',2.5)}}
 function genCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ';let s='';for(let i=0;i<4;i++)s+=A[Math.floor(Math.random()*A.length)];return s}
 $('bCreate').onclick=()=>{audioInit();solo=false;iCreated=true;joinRoom(genCode())};
 $('bJoin').onclick=()=>{audioInit();const v=$('codeIn').value.trim().toUpperCase();
