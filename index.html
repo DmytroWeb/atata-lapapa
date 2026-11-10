@@ -313,6 +313,9 @@ const S_PIGEON=mkSprite(["...gg.....","..gkg.....",".oggggggg.","..gppgggg.","..
 const S_DOG=mkSprite([".........bb.","b.......bbbb",".b......bbeb","..bbbbbbbbbn","..bbbbbbbbb.","..bbbbbbbb..","..b.b..b.b..","..k.k..k.k.."],{b:'#c98a55',e:'#2a1a10',n:'#2a1a10',k:'#6e4a2e'},'#4a3022');
 const S_PKG=mkSprite(["pppppppppp","pPPPPPPPPp","pPwwPPwwPp","pPwwwwwwPp","pPPwwwwPPp","pPPPwwPPPp","pPPPPPPPPp","pppppppppp"],{p:'#d9708f',P:'#f39ab8',w:'#ffffff'},'#8a3a55');
 const S_CHOC=mkSprite(["..yyyy..","rrrrrrrr","rbbbbbbr","rbcbcbbr","rbbbbbbr","rrrrrrrr"],{y:'#f5c542',r:'#c0304a',b:'#6b3f24',c:'#8a5a34'},'#5a1a28');
+const S_CAKE=mkSprite([".....ff.....",".....ww.....",".cccccccccc.","ccpccpccpccc","pppppppppppp","pprpprpprppp","pppppppppppp","bbbbbbbbbbbb"],{f:'#ffb347',w:'#ffffff',c:'#fff3e6',p:'#f39ab8',r:'#e8475f',b:'#c8d2e8'},'#8a3a55');
+const S_GIFTS=[['#9b6bd8','#f5c542'],['#38c8f0','#ffffff'],['#e8475f','#f5c542'],['#5cc35a','#ffffff'],['#f5a623','#e8475f']].map(([r,y])=>mkSprite(["...y.y...","....y....","rrrryrrrr","rrrryrrrr","yyyyyyyyy","rrrryrrrr","rrrryrrrr","rrrryrrrr"],{r,y},'#3a2330'));
+const S_CUPCAKE=mkSprite(["...rr...","..wwww..",".wwwwww.","wwpwwbww",".kkkkkk.",".kdkdkk.",".kkkkkk.","..kkkk.."],{r:'#e8475f',w:'#fde0ea',p:'#38c8f0',b:'#f5c542',k:'#c98a55',d:'#a8683a'},'#6e3d1f');
 const S_BEE=mkSprite(["...ww.ww..","...wwwww..",".yykyykyy.","sykyykyyey","yykyykyyyy",".yykyykyy."],{w:'#e6f6ff',y:'#f7c934',k:'#2a1a10',e:'#2a1a10',s:'#2a1a10'},'#2a1a10');
 const S_HOG=mkSprite(["..s.s.s.s...",".ssssssss...","ssssssssbf..","sssssssbfef.","ssssssbffffn","sssssssbfff.",".ssssssbbb..","..dd...dd..."],{s:'#6b4a35',b:'#c99a6a',f:'#f0d2a8',e:'#2a1a10',n:'#2a1a10',d:'#4a3022'},'#2a1a10');
 
@@ -397,15 +400,23 @@ function buildLevels(){
     .pit(112,125).ship(112,7,11).row(115,5,'hhhh').p(129,8,'K').robot(134,3).coopGate(140,143,146,'3','C').row(148,8,'hhhh').p(154,8,'F');
   L9.rocket=150;
   const L10=new Lvl(150,'citta','La missione di Atata 💗');
-  L10.special=true;L10.pharmacy=72;L10.house=137;
+  L10.special=true;L10.kind='pads';L10.pharmacy=72;L10.house=137;L10.chip='💗 La missione di Atata';
   L10.ground(0,149).row(5,8,'hhh').hint(2,'Missione speciale: la tua Lapapa ha bisogno degli assorbenti! Corri in farmacia e portaglieli a casa ♥')
     .dog(13,3).r(19,6,21,6,'=').row(19,5,'hhh').pit(24,25).pigeon(28,5,3).p(32,8,'K').crack(37).hint(32,'Strada chiusa per lavori? Spallata! (tasto ★)')
     .row(40,8,'hhh').dog(45,3).r(50,6,52,6,'=').r(54,4,56,4,'=').p(55,3,'c').p(56,3,'M').pit(59,61).pigeon(64,4,2).p(68,8,'K')
     .p(75,8,'P').hint(69,'Ecco la farmacia! Entra e prendi il pacco di assorbenti 🩷').row(81,8,'hhhh').dog(86,3).pit(92,93).r(96,6,98,6,'=').row(96,5,'hhh')
     .pigeon(101,5,3).p(106,8,'K').crack(110).r(114,6,116,6,'=').row(114,5,'cc').dog(122,3).pit(128,129).row(132,8,'hhhh').p(141,8,'F')
     .hint(128,'Ancora un ultimo sforzo: casa di Lapapa è lì!');
+  const L11=new Lvl(150,'festa','Il giorno speciale di Lapapa 🎂');
+  L11.special=true;L11.kind='bday';L11.bakery=72;L11.house=137;L11.chip='🎂 Il giorno speciale di Lapapa';L11.giftTotal=5;
+  L11.ground(0,149).row(5,8,'hhh').hint(2,'Oggi è il compleanno di Lapapa! Prendi la torta in pasticceria e raccogli tutti i regali 🎁')
+    .r(9,6,12,6,'=').p(11,5,'R').dog(17,3).pit(23,24).pigeon(27,5,3).r(30,6,32,6,'=').r(34,4,36,4,'=').p(35,3,'R').p(36,3,'M').p(39,8,'K')
+    .crack(44).hint(39,'Strada chiusa? Spallata! (tasto ★)').row(47,8,'hhh').dog(52,3).pit(58,60).p(59,6,'R').pigeon(64,4,2).p(68,8,'K')
+    .p(75,8,'P').hint(69,'La pasticceria! Prendi la torta di compleanno 🎂').row(81,8,'hhhh').dog(86,3).p(88,7,'=').r(90,5,92,5,'=').p(91,4,'R')
+    .pit(95,96).r(99,6,101,6,'=').row(99,5,'hhh').pigeon(104,5,3).p(108,8,'K').crack(112).dog(118,3).p(124,8,'R').pit(127,128).row(131,8,'hhhh').p(141,8,'F')
+    .hint(128,'Ci sei quasi: la festa è lì!');
   L1.p(13,5,'M');L2.p(12,3,'M');L3.p(110,3,'M');L4.p(131,5,'M');L5.p(27,5,'M');L6.p(86,4,'M');
-  return [L1,L2,L3,L4,L5,L6,L8,L9,L7,L10];
+  return [L1,L2,L3,L4,L5,L6,L8,L9,L7,L10,L11];
 }
 const LEVELS=buildLevels();
 const MAIN=8,SECRET=8,SPECIAL=9,SECRET_CODE='BUBUZUCCA';
@@ -525,9 +536,12 @@ function startLevel(i){
 let idleT=0,farT=0,cudT=0,protCd=6,ambT=20;
 let myEmo=null,lastRemoteEmo=0,emoN=0,abT=0,hugDone=false,reviveCd=0,myLetter='',letterGot=new Set();
 const floaters=[];
-const DEF_LETTERS=['Ogni passo con te è un’avventura ♥','Anche nel bosco più buio, con te ho sempre la luce','Con te mi sento sempre sulle nuvole','Sei la mia estate tutto l’anno','Sei il cristallo più prezioso che ho mai trovato','Tra tutte le stelle del cielo, scelgo sempre te','Anche nel freddo più freddo, con te ho sempre il cuore caldo','In qualsiasi futuro, io voglio essere con te','Sei l’unico incantesimo a cui non voglio sfuggire 🎃','Grazie di prenderti sempre cura di me, anche nei giorni no ♥'];
+const DEF_LETTERS=['Ogni passo con te è un’avventura ♥','Anche nel bosco più buio, con te ho sempre la luce','Con te mi sento sempre sulle nuvole','Sei la mia estate tutto l’anno','Sei il cristallo più prezioso che ho mai trovato','Tra tutte le stelle del cielo, scelgo sempre te','Anche nel freddo più freddo, con te ho sempre il cuore caldo','In qualsiasi futuro, io voglio essere con te','Sei l’unico incantesimo a cui non voglio sfuggire 🎃','Grazie di prenderti sempre cura di me, anche nei giorni no ♥','Tanti auguri amore mio: con te ogni giorno è una festa ♥'];
 function lettersFor(c){const a=store.get('letters_for_'+c);return Array.isArray(a)?a:[]}
 let specStart=0;
+function giftCount(){let n=0;for(const b of bears)if(b.c==='atata')n=Math.max(n,b.gifts||0);if(remote&&remote.c==='atata')n=Math.max(n,remote.gifts||0);return n}
+function partyTime(x){const cols=['#e8475f','#f5c542','#38c8f0','#5cc35a','#9b6bd8','#ff8fc6'];for(let k=0;k<6;k++)setTimeout(()=>{for(let i=0;i<14;i++)burst(x-40+Math.random()*120,40+Math.random()*60,cols[(i+k)%6],1)},k*180);
+  if(!AC||muted)return;const t0=AC.currentTime+.2,q=.28;const N=[[67,.75],[67,.25],[69,1],[67,1],[72,1],[71,2],[67,.75],[67,.25],[69,1],[67,1],[74,1],[72,2]];let tt=t0;for(const [n,d] of N){tone(mf(n),q*d*.95,'square',.05,tt);tt+=q*d}}
 function me(){return bears[active]}
 function isMine(b){return b!==remote&&bears.includes(b)}
 function setAbLabel(){const c=bears[active]&&bears[active].c;$('bA').innerHTML=c==='atata'?'★<br>SPALLATA':'★<br>PLANA'}
@@ -646,12 +660,13 @@ function checkItems(b){
     if(t==='M'&&b===me()&&!letterGot.has(lvIdx)){letterGot.add(lvIdx);burst(tx*T+8,ty*T+8,'#f39ab8',12);setTimeout(()=>{if(mode==='play')openLetter(b)},250)}
     if(t==='K'&&!b.cpSet.has(id)){b.cpSet.add(id);const cp={x:tx*T+2,y:ty*T+2};if(cp.x>b.cp.x)b.cp=cp;SFX.cp();if(b===me())toast('Checkpoint per tutti e due!',1.2);
       if(solo)for(const o of bears)if(o!==b&&cp.x>o.cp.x){o.cp=cp;o.cpSet.add(id)}}
-    if(t==='P'&&L.special&&b.c==='atata'&&!b.pkg){b.pkg=true;SFX.heart();burst(tx*T+8,ty*T+8,'#f39ab8',16);toast('Assorbenti presi! Ora corri da Lapapa 💗',3);if(isMine(b)){convCd=0;b.sayCd=0;sayPair(b,'pkg')}}
-    if(t==='F'&&!b.goal&&L.special&&(b.c!=='atata'||!b.pkg)){if(b.c==='atata'&&!b.warnPkg){b.warnPkg=true;toast('Hai dimenticato gli assorbenti! Torna in farmacia 🩷',3)}continue}
+    if(t==='R'&&b.c==='atata'&&!collectedSet().has(id)){b.col.add(id);b.gifts=(b.gifts||0)+1;SFX.heart();burst(tx*T+8,ty*T+8,'#f5c542',14);toast('Regalo trovato! 🎁 '+giftCount()+'/'+L.giftTotal,1.8);if(isMine(b))say(b,'gift',.8)}
+    if(t==='P'&&L.special&&b.c==='atata'&&!b.pkg){b.pkg=true;SFX.heart();burst(tx*T+8,ty*T+8,'#f39ab8',16);toast(L.kind==='bday'?(giftCount()>=L.giftTotal?'Torta presa! 🎂 Ora corri alla festa!':'Torta presa! 🎂 Ora corri alla festa (e trova i regali!)'):'Assorbenti presi! Ora corri da Lapapa 💗',3);if(isMine(b)){convCd=0;b.sayCd=0;sayPair(b,'pkg')}}
+    if(t==='F'&&!b.goal&&L.special&&(b.c!=='atata'||!b.pkg)){if(b.c==='atata'&&!b.warnPkg){b.warnPkg=true;toast(L.kind==='bday'?'Hai dimenticato la torta! Torna in pasticceria 🎂':'Hai dimenticato gli assorbenti! Torna in farmacia 🩷',3)}continue}
     if(t==='F'&&!b.goal){b.goal=true;b.vx=0;SFX.goal();burst(tx*T+8,ty*T,'#f5c542',14);
       const otherName=solo?CHARS[other(b.c)].name:(partner?CHARS[other(myChar)].name:'l’altro');
       if(b===me())toast(L.special?'Sei arrivato da Lapapa! 💗':'Traguardo! Ora aspetta '+otherName+'.',2.5);
-      if(L.special){L.doneT=performance.now();if(isMine(b))setTimeout(()=>{convCd=0;b.sayCd=0;sayPair(b,'arrive')},500)}
+      if(L.special){L.doneT=performance.now();if(L.kind==='bday')partyTime(tx*T);if(isMine(b))setTimeout(()=>{convCd=0;b.sayCd=0;sayPair(b,'arrive')},500)}
       else{const oth=solo?bears.find(x=>x!==b):remote;if(isMine(b)&&!(oth&&oth.goal))setTimeout(()=>say(b,'goal'),600)}}
   }
 }
@@ -709,6 +724,12 @@ const TL={
    lapapa:[['Ho paura del buio… mi abbracci?','Ti abbraccio fortissimo ♥'],['I cristalli brillano come i tuoi occhi','I tuoi brillano di più']]},
   amb:{atata:[['Ecooo… Lapapa ti amaaa…','L’eco risponde: anche io ♥'],['Ti regalo un cristallo rosa','È del mio colore preferito!'],['Se hai paura canto una canzoncina','Canta pure, ma piano piano']],
    lapapa:[['Eco eco! Atata è un tontolone!','Ehi! Ti ho sentita!'],['Qui fa freschino… scaldami','Vieni qui, ti scaldo io'],['Mi è caduto un cristallo? No, era il mio cuore','Lo raccolgo io e lo tengo stretto ♥']]}},
+ festa:{start:{atata:[['Oggi è il giorno speciale della mia Lapapa! Corro!','Ti aspetto, amore 🥰'],['Torta e regali per la mia principessa: missione compleanno!','Sbrigati che sono curiosa 🙈']],
+   lapapa:[['Atata, ti sei ricordato che giorno è oggi? 🥺','Certo amore, come potrei dimenticarlo ♥'],['Oggi compio gli anni! 🥳','Lo so, e sto arrivando con una sorpresa!']]},
+  amb:{atata:[['Questo regalo le piacerà tantissimo','Che cos’è? Che cos’è? 🙈'],['Chissà se le piace la torta alla fragola','La adoro! 🍓'],['Devo trovare tutti i regali!','Non vedo l’ora di aprirli!'],['La mia Lapapa compie gli anni ed è sempre più bella','Smettila che arrossisco 🥰'],['Tanti auguri a te… shh, è una sorpresa!','Ho sentito tutto 😂']],
+   lapapa:[['Atata, dove sei? La festa ti aspetta!','Sto arrivando con le sorprese!'],['Mi sono messa il cappellino da festa 🥳','Sarai la festeggiata più carina del mondo'],['Ho già preparato le candeline','Accendile, sto arrivando!']]},
+  pkg:{atata:[['Torta presa! Alla fragola, la sua preferita ♥','Mmm non vedo l’ora 🥰']],lapapa:[['Hai preso la torta? 🎂','Presa! Arrivo!']]},
+  arrive:{atata:[['Tanti auguri amore mio! 🎂','Il compleanno più bello di sempre ♥'],['Sorpresa! Torta e regali per te!','Ti amo tantissimo, orsetto 🥺']],lapapa:[['Sei arrivato! 🥳','Tanti auguri, principessa ♥']]}},
  citta:{start:{atata:[['Missione assorbenti: via! Resisti amore, arrivo!','Corri orsetto, ti aspetto sul divano 🥺'],['La mia Lapapa ha bisogno di me: niente mi fermerà!','Il mio eroe in missione ♥'],['Pancino che fa male? Ci penso io, amore!','Grazie orsetto, fai presto 🥺']],
    lapapa:[['Atata, mi porti gli assorbenti? 🥺','Arrivo subito, amore mio!'],['Ho il pancino che fa male…','Resisti, sto correndo da te!']]},
   amb:{atata:[['Con le ali o senza? …li prendo tutti e due!','Con le ali amore, con le ali 😂'],['Le prendo anche la cioccolata, così è più felice','Tantissima cioccolata, grazie 🥺'],['Ti voglio bene anche in questi giorni, sai?','Anche io, il mio orsetto premuroso ♥'],['Mi stai aspettando sotto la coperta?','Sì, con la borsa dell’acqua calda'],['Corro corro corro!','Attento a non cadere!'],['Notte, giorno, super… boh, li prendo tutti!','Ahah, ti amo lo stesso ♥']],
@@ -748,11 +769,14 @@ function showBubble(key,target,text,c){if(!text)return;text=adapt(text);let bb=b
   bb.el.className='bub '+c;bb.el.textContent=text;bb.text=text;bb.target=target;bb.until=performance.now()+Math.min(8000,3200+text.length*75);bb.el.style.display='block'}
 function bubKey(b){return b===remote?'remote':'b'+bears.indexOf(b)}
 let convCd=0;
+const BDAY_LINES={heart:{atata:['Un cuoricino in più per la festeggiata ♥']},gift:{atata:['Un regalo! Questo è per lei 🎁','Un altro regalo per la mia Lapapina!','Questo le piacerà tantissimo!']},
+  hurt:{atata:['Ahia! Ma la torta è salva!','Non mi fermo, è il suo compleanno!']},squash:{atata:['Scusa, ho una festa da raggiungere!','Fate passare il fattorino del compleanno!']},
+  dash:{atata:['Fate largo, è il compleanno della mia Lapapa!']},idle:{atata:['Non posso fermarmi, la festa mi aspetta!'],lapapa:['Atata, arrivi? 🥺','Quanto manca? Sono curiosa! 🙈']}};
 const SPEC_LINES={heart:{atata:['Un cuoricino per la mia Lapapa ♥','Questo glielo porto!']},hurt:{atata:['Ahia! Ma non mi arrendo!','Non c’è tempo per farsi male!','Niente mi ferma, Lapapa mi aspetta!']},
   squash:{atata:['Scusa, vado di fretta: è un’emergenza!','Fate passare, missione importante!','Scusa piccione, devo correre!']},dash:{atata:['Fate largo! Missione assorbenti!','Nessun muro mi separa dalla mia Lapapa!']},
   idle:{atata:['Non posso fermarmi, Lapapa mi aspetta!','Su, su, che lei ha il pancino che fa male!'],lapapa:['Atata, ci sei? 🥺','Mi manchi… torna presto']}};
 function say(b,key,chance){
-  if(L&&L.special){const sl=SPEC_LINES[key]&&SPEC_LINES[key][b&&b.c];if(!sl)return false;if(chance&&Math.random()>chance)return false;const now=performance.now();if((b.sayCd&&now<b.sayCd)||now<convCd)return false;convCd=now+9000;b.sayCd=now+4500;const text=pick(sl);showBubble(bubKey(b),b,text,b.c);if(!solo){mySay={id:++sayN,t:text,ts:Date.now()};sendPresence(true)}return true}
+  if(L&&L.special){const SL=L.kind==='bday'?BDAY_LINES:SPEC_LINES;const sl=SL[key]&&SL[key][b&&b.c];if(!sl)return false;if(chance&&Math.random()>chance)return false;const now=performance.now();if((b.sayCd&&now<b.sayCd)||now<convCd)return false;convCd=now+9000;b.sayCd=now+4500;const text=pick(sl);showBubble(bubKey(b),b,text,b.c);if(!solo){mySay={id:++sayN,t:text,ts:Date.now()};sendPresence(true)}return true}
   if(!b||!LINES[key]||(chance&&Math.random()>chance))return false;const now=performance.now();if(b.sayCd&&now<b.sayCd)return false;if(now<convCd)return false;convCd=now+14000;
   const text=pick(LINES[key][b.c]||['']);if(!text)return false;b.sayCd=now+4500;showBubble(bubKey(b),b,text,b.c);
   if(solo){const o=bears.find(x=>x!==b);if(o)setTimeout(()=>{if(mode!=='play'&&mode!=='res')return;const r=pick(REPLY[key][o.c]||['']);if(r){o.sayCd=performance.now()+3000;showBubble(bubKey(o),o,r,o.c)}},1800)}
@@ -861,7 +885,7 @@ function presenceState(){
   const ok=outKey(outfitOf(myChar));
   if(mode==='wait')return {c:myChar,st:'wait',rdy:ready,o:ok,sel:selLv,host:iCreated?1:0,pr:myProg()};
   if(!b)return {c:myChar,st:mode,o:ok};
-  return {c:myChar,st:mode==='res'?'res':'play',rdy:ready,lv:lvIdx,x:Math.round(b.x*10)/10,y:Math.round(b.y*10)/10,vx:Math.round(b.vx),vy:Math.round(b.vy),f:b.face,g:b.goal?1:0,ho:b.honey,he:b.hearts,col:[...b.col],sq:[...b.sq],tot:totals[myChar]||0,inv:b.inv>0?1:0,br:[...b.br],gl:b.gl?1:0,ds:b.dash>0?1:0,o:ok,pr:myProg(),pkg:b.pkg?1:0,jump:jumpMsg,cp:[Math.round(b.cp.x),Math.round(b.cp.y)],say:mySay,emo:myEmo,ab:abT,ko:b.ko>0?1:0,lt:myLetter};
+  return {c:myChar,st:mode==='res'?'res':'play',rdy:ready,lv:lvIdx,x:Math.round(b.x*10)/10,y:Math.round(b.y*10)/10,vx:Math.round(b.vx),vy:Math.round(b.vy),f:b.face,g:b.goal?1:0,ho:b.honey,he:b.hearts,col:[...b.col],sq:[...b.sq],tot:totals[myChar]||0,inv:b.inv>0?1:0,br:[...b.br],gl:b.gl?1:0,ds:b.dash>0?1:0,o:ok,pr:myProg(),pkg:b.pkg?1:0,gifts:b.gifts||0,jump:jumpMsg,cp:[Math.round(b.cp.x),Math.round(b.cp.y)],say:mySay,emo:myEmo,ab:abT,ko:b.ko>0?1:0,lt:myLetter};
 }
 function sendPresence(force){
   if(!nroom||solo)return;const now=performance.now();if(!force&&now-lastPresT<40)return;
@@ -880,7 +904,7 @@ function onPeers(ch){
     if(Array.isArray(s.cp)&&s.lv===lvIdx&&bears[0]&&s.cp[0]>bears[0].cp.x){bears[0].cp={x:s.cp[0],y:s.cp[1]};const k=Math.floor(s.cp[0]/T)+'_'+Math.floor(s.cp[1]/T);bears[0].cpSet.add(k)}
     if(s.jump&&s.jump.id!==lastJump){const fresh=Date.now()-s.jump.id<8000;lastJump=s.jump.id;
       if(fresh&&(mode==='play'||mode==='res'||mode==='pause'||mode==='letter')&&s.jump.lv!==lvIdx&&LEVELS[s.jump.lv]){startLevel(s.jump.lv);toast(CHARS[s.c].name+' ha scelto: '+LEVELS[s.jump.lv].name,3)}}
-    onRemoteSay(s.say);onRemoteEmo(s.emo);remote.abT=s.ab||0;remote.pkg=!!s.pkg;if(s.ko&&!remote.ko&&mode==='play'){toast(CHARS[s.c].name+' è '+gx(s.c,'svenuto','svenuta')+'! Corri a '+gx(s.c,'salvarlo','salvarla')+' con un bacino 💋',4)}remote.ko=!!s.ko;remote.lt=typeof s.lt==='string'?s.lt.slice(0,220):'';
+    onRemoteSay(s.say);onRemoteEmo(s.emo);remote.abT=s.ab||0;remote.pkg=!!s.pkg;remote.gifts=s.gifts||0;if(s.ko&&!remote.ko&&mode==='play'){toast(CHARS[s.c].name+' è '+gx(s.c,'svenuto','svenuta')+'! Corri a '+gx(s.c,'salvarlo','salvarla')+' con un bacino 💋',4)}remote.ko=!!s.ko;remote.lt=typeof s.lt==='string'?s.lt.slice(0,220):'';
     if(Math.abs(remote.x-(s.x||0))>64||Math.abs(remote.y-(s.y||0))>64){remote.x=s.x||0;remote.y=s.y||0}
   }else remote=null;
   refreshWait();
@@ -915,13 +939,13 @@ function refreshMenu(){pickUI($('pickMenu'),refreshMenu);$('secRow').style.displ
 // ---------- scelta del livello ----------
 let iCreated=false,lastJump=0;
 function doneSet(){const a=store.get('done');return new Set(Array.isArray(a)?a:[])}
-function isUnlocked(i){if(i===0||i===SPECIAL)return true;if(i>=MAIN)return !!store.get('secret');const d=doneSet();return d.has(i)||d.has(i-1)}
+function isUnlocked(i){if(i===0||(LEVELS[i]&&LEVELS[i].special))return true;if(i>=MAIN)return !!store.get('secret');const d=doneSet();return d.has(i)||d.has(i-1)}
 let selLv=+(store.get('selLv')||0);if(!LEVELS[selLv]||!isUnlocked(selLv))selLv=0;
 function setSel(i){selLv=i;store.set('selLv',i)}
 function lvChips(el,cur,onPick,readonly){el.innerHTML='';const d=doneSet();
   LEVELS.forEach((lv,i)=>{if(i===SECRET&&!store.get('secret')&&!(readonly&&cur===i))return;const ok=isUnlocked(i)||(readonly&&cur===i);
     const b=document.createElement('button');b.className='chip'+(i===cur?' sel':'');
-    b.textContent=(i===SPECIAL?'💗 La missione di Atata':i>=MAIN?'🎃 Segreto':(i+1)+' · '+lv.name)+(d.has(i)?' ✓':ok?'':' 🔒');b.disabled=readonly||!ok;
+    b.textContent=(lv.chip?lv.chip:i>=MAIN?'🎃 Segreto':(i+1)+' · '+lv.name)+(d.has(i)?' ✓':ok?'':' 🔒');b.disabled=readonly||!ok;
     if(!readonly&&ok)b.onclick=()=>{audioInit();SFX.plate();onPick(i)};el.appendChild(b)})}
 function chosenLevel(){if(!iCreated&&partner&&partner.presence.host&&typeof partner.presence.sel==='number'&&LEVELS[partner.presence.sel])return partner.presence.sel;return selLv}
 const secSel=false;
@@ -1014,11 +1038,14 @@ function showResults(){
   $('resTable').innerHTML='<tr><th></th><th>'+(isSec?'Caramelle':'Miele')+'</th><th>Cuori</th><th>Livello</th><th></th></tr>'+rows;
   const win=pa===pb?null:(pa>pb?A.c:B.c);
   const lines=win?[`${CHARS[win].name} vince questo livello! ${CHARS[other(win)].name}, la rivincita è tua.`,`${CHARS[win].name} ha fatto il pieno… ${CHARS[other(win)].name}, non farti battere ancora!`]:['Pareggio perfetto: siete proprio una squadra! ♥'];
-  if(lvIdx===SPECIAL){const at=solo?bears[0]:(myChar==='atata'?bears[0]:(remote||{honey:0,hearts:0}));const tm=fmtTime((L.doneT||performance.now())-specStart);
-    $('resTitle').textContent='Missione compiuta! 💗';
+  if(L.special){const at=solo?bears[0]:(myChar==='atata'?bears[0]:(remote||{honey:0,hearts:0}));const tm=fmtTime((L.doneT||performance.now())-specStart);
+    const bk='specBest_'+lvIdx;const best=store.get(bk);const ms=(L.doneT||performance.now())-specStart;if(!best||ms<best)store.set(bk,Math.round(ms));const rec=(best&&ms>=best?' (record: '+fmtTime(best)+')':' — nuovo record!');
+    if(L.kind==='bday'){const g=giftCount();$('resTitle').textContent='Buon compleanno Lapapa! 🎂';
+      $('resTable').innerHTML=`<tr><th></th><th>Torta</th><th>Regali</th><th>Dolcetti</th><th>Tempo</th></tr><tr><td><b>Atata</b></td><td>🎂 ✓</td><td>🎁 ${g}/${L.giftTotal}</td><td>🧁 ${at.honey}</td><td>⏱ ${tm}</td></tr>`;
+      $('resMsg').textContent=(g>=L.giftTotal?'Lapapa: «Tutti i regali?! È il compleanno più bello della mia vita ♥»':g>0?'Lapapa: «Grazie amore, la torta e i regali sono bellissimi ♥» (ne mancano '+(L.giftTotal-g)+': li trovi la prossima volta?)':'Lapapa: «La torta! Grazie amore, sei dolcissimo ♥» (la prossima volta trova anche i regali 🎁)')+rec}
+    else{$('resTitle').textContent='Missione compiuta! 💗';
     $('resTable').innerHTML=`<tr><th></th><th>Cioccolatini</th><th>Cuori</th><th>Tempo</th></tr><tr><td><b>Atata</b></td><td>🍫 ${at.honey}</td><td>♥ ${at.hearts}</td><td>⏱ ${tm}</td></tr>`;
-    const best=store.get('specBest');const ms=(L.doneT||performance.now())-specStart;if(!best||ms<best)store.set('specBest',Math.round(ms));
-    $('resMsg').textContent=(at.honey>=10?'Lapapa: «Anche tutta questa cioccolata?! Sei il fidanzato migliore del mondo ♥»':'Lapapa: «Sei arrivato! Sei il fidanzato migliore del mondo ♥»')+(best&&ms>=best?' (record: '+fmtTime(best)+')':' — nuovo record!');
+    $('resMsg').textContent=(at.honey>=10?'Lapapa: «Anche tutta questa cioccolata?! Sei il fidanzato migliore del mondo ♥»':'Lapapa: «Sei arrivato! Sei il fidanzato migliore del mondo ♥»')+rec}
     $('bNext').textContent='Torna al livello 1';showScreen('sRes');return}
   if(isSec){$('resTitle').textContent='🎃 Livello segreto completato!';$('resMsg').textContent=lines[Math.floor(Math.random()*lines.length)]+' Buon Halloween, coppia da brivido!';$('bNext').textContent='Torna al livello 1'}
   else if(last){const ta=totals.atata,tb=totals.lapapa;$('resTitle').textContent='Ce l’avete fatta: tutti gli 8 livelli!';
@@ -1029,9 +1056,9 @@ function showResults(){
 }
 
 // ---------- HUD ----------
-const icH=S_HONEY.toDataURL(),icC=S_HEART.toDataURL(),icK=S_CANDY.toDataURL(),icP=S_CHOC.toDataURL();
+const icH=S_HONEY.toDataURL(),icC=S_HEART.toDataURL(),icK=S_CANDY.toDataURL(),icP=S_CHOC.toDataURL(),icU=S_CUPCAKE.toDataURL();
 function fmtTime(ms){const s=Math.max(0,Math.floor(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
-function hudItem(name,h,c){return `<span class="who">${name}</span><span><img class="ic" src="${L&&L.theme==='halloween'?icK:L&&L.theme==='citta'?icP:icH}"> ${h}</span><span><img class="ic" src="${icC}"> ${c}</span>`}
+function hudItem(name,h,c){return `<span class="who">${name}</span><span><img class="ic" src="${L&&L.theme==='halloween'?icK:L&&L.theme==='citta'?icP:L&&L.theme==='festa'?icU:icH}"> ${h}</span><span><img class="ic" src="${icC}"> ${c}</span>`}
 let hudCache='';
 function updateHud(){
   if(!L)return;let a,b;
@@ -1041,7 +1068,8 @@ function updateHud(){
     else if(partner&&remote)b=`<span class="who">${CHARS[remote.c]?CHARS[remote.c].name:''}: ${remote.st==='res'?'ai risultati':(typeof remote.lv==='number'?'livello '+(remote.lv+1):'…')}</span>`;
     else b='<span class="who">in attesa dell’altro… codice '+(code||'')+'</span>'}
   const tmr=L.special&&specStart?' ⏱ '+fmtTime((L.doneT||performance.now())-specStart):'';
-  const lv=(lvIdx===SPECIAL?'Speciale':lvIdx>=MAIN?'Segreto':`Liv. ${lvIdx+1}`)+tmr+`<br><span class="who">${L.name}</span>`;
+  const gf=L.kind==='bday'?' 🎁 '+giftCount()+'/'+L.giftTotal:'';
+  const lv=(L.special?'Speciale':lvIdx>=MAIN?'Segreto':`Liv. ${lvIdx+1}`)+tmr+gf+`<br><span class="who">${L.name}</span>`;
   const key=a+'|'+b+'|'+lv;if(key===hudCache)return;hudCache=key;
   $('hudMe').innerHTML=a;$('hudOther').innerHTML=b;$('hudLvl').innerHTML=lv;
 }
@@ -1053,6 +1081,7 @@ const TH={
   spiaggia:{sky:'#9fe0ff',far:'#4fb6e0',near:'#7ccdf0',grass:'#f7e2a8',grass2:'#e0c07a',dirt:'#eccb83',dot:'#d4ae66',block:'#e9a35a',block2:'#b06a2e',cloud:'#ffffff'},
   grotta:{sky:'#2f2744',far:'#40365c',near:'#52466f',grass:'#8a7fb0',grass2:'#6a5f90',dirt:'#5d5472',dot:'#4a4260',block:'#7a6aa8',block2:'#4f4475',cloud:'#3a3152'},
   notte:{sky:'#1f2550',far:'#2c356e',near:'#36428a',grass:'#6c7fd8',grass2:'#4b5bb0',dirt:'#3a4580',dot:'#2f3970',block:'#7d6bd0',block2:'#4c3f95',cloud:'#3a4580'},
+  festa:{sky:'#ffd9ec',far:'#f3d9b8',near:'#e8c39a',grass:'#d9d2c8',grass2:'#b8ae9f',dirt:'#8c8478',dot:'#7a7266',block:'#f39ab8',block2:'#c96a8a',cloud:'#ffffff'},
   citta:{sky:'#bfe3ff',far:'#f3d9b8',near:'#e8c39a',grass:'#d9d2c8',grass2:'#b8ae9f',dirt:'#8c8478',dot:'#7a7266',block:'#c99a5a',block2:'#8a6534',cloud:'#ffffff'},
   neve:{sky:'#cfe6fb',far:'#e9f3fc',near:'#d3e4f2',grass:'#ffffff',grass2:'#dcecf9',dirt:'#a9bccc',dot:'#91a6b8',block:'#a7e2f5',block2:'#5fb4d6',cloud:'#ffffff'},
   futuro:{sky:'#1b1840',far:'#2a2860',near:'#352f78',grass:'#3a4a7a',grass2:'#38e1ff',dirt:'#2a3360',dot:'#232a52',block:'#5a6aa0',block2:'#2f3a6a',cloud:'#2a2860'},
@@ -1068,14 +1097,18 @@ function drawBg(th,cx){
   else if(L.theme==='spiaggia'){ctx.fillStyle='#ffe08a';ctx.beginPath();ctx.arc(VW-60,40,16,0,7);ctx.fill();ctx.fillStyle=th.far;ctx.fillRect(0,118+YOFF,VW,VH);ctx.fillStyle=th.near;for(let i=0;i<VW/12+2;i++){const x=i*12-((cx*.3+Date.now()/60)%12);ctx.fillRect(x,124+YOFF+((i%2)*2),6,2)}ctx.fillStyle='#ffffff';for(let i=0;i<VW/24+2;i++){const x=i*24-((cx*.5)%24);ctx.fillRect(x,150+YOFF,10,2)}}
   else if(L.theme==='grotta'){trees(th.far,cx*.25,120,.9);ctx.fillStyle=th.far;for(let i=-1;i<VW/30+2;i++){const k=Math.floor(cx*.25/30)+i,x=k*30-cx*.25;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x+15,30+(k*13)%25);ctx.lineTo(x+30,0);ctx.fill()}
     const cols=['#7fe3ff','#ff9be0','#b9ff9b'];for(let i=-1;i<VW/50+2;i++){const k=Math.floor(cx*.5/50)+i,x=k*50-cx*.5;ctx.fillStyle=cols[((k%3)+3)%3];ctx.beginPath();ctx.moveTo(x+10,140);ctx.lineTo(x+14,124+(k*7)%8);ctx.lineTo(x+18,140);ctx.fill()}}
-  else if(L.theme==='citta'){ctx.fillStyle='#fff3c2';ctx.beginPath();ctx.arc(VW-60,34,13,0,7);ctx.fill();
+  else if(L.theme==='citta'||L.theme==='festa'){ctx.fillStyle='#fff3c2';ctx.beginPath();ctx.arc(VW-60,34,13,0,7);ctx.fill();
     const cols=['#f7d488','#f3a99b','#f6c08e','#e8b4c8','#bfd8a8','#f2e2b8'];
     const row=(off,base,sc,dark)=>{const wd=46*sc;for(let i=-1;i<VW/wd+2;i++){const k=Math.floor(off/wd)+i,x=k*wd-off,h=(52+((k*29)%26+26)%26)*sc;ctx.fillStyle=cols[((k%6)+6)%6];if(dark){ctx.globalAlpha=.55}
       ctx.fillRect(x,base+YOFF-h,wd-3,h+40);ctx.fillStyle='#9a6a4a';ctx.fillRect(x-2,base+YOFF-h-3,wd+1,4);
       ctx.fillStyle='#6a8aa8';for(let yy=base-h+8;yy<base-6;yy+=12*sc)for(let xx=5;xx<wd-10;xx+=12*sc){ctx.fillRect(x+xx,yy+YOFF,5*sc,7*sc)}
       if(!dark){ctx.fillStyle='#7a5a3e';for(let yy=base-h+16;yy<base-6;yy+=24)ctx.fillRect(x+3,yy+YOFF+7,wd-9,1)}ctx.globalAlpha=1}};
     row(cx*.2,118,.8,true);row(cx*.45,132,1,false);
-    for(let i=-1;i<VW/70+2;i++){const k=Math.floor(cx*.6/70)+i,x=k*70-cx*.6+30;ctx.fillStyle='#4a5a6a';ctx.fillRect(x,100+YOFF,2,44);ctx.fillStyle='#ffe08a';ctx.fillRect(x-2,98+YOFF,6,3)}}
+    for(let i=-1;i<VW/70+2;i++){const k=Math.floor(cx*.6/70)+i,x=k*70-cx*.6+30;ctx.fillStyle='#4a5a6a';ctx.fillRect(x,100+YOFF,2,44);ctx.fillStyle='#ffe08a';ctx.fillRect(x-2,98+YOFF,6,3)}
+    if(L.theme==='festa'){const fc=['#e8475f','#f5c542','#38c8f0','#5cc35a','#9b6bd8'],tm=Date.now()/1000;
+      for(let i=-1;i<VW/14+2;i++){const k=Math.floor(cx*.6/14)+i,x=k*14-cx*.6,y=20+Math.sin(k*.5)*3;ctx.fillStyle=fc[((k%5)+5)%5];ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+10,y);ctx.lineTo(x+5,y+8);ctx.fill()}
+      ctx.fillStyle='#7a5a3e';for(let i=0;i<VW;i+=2)ctx.fillRect(i,20+Math.sin((i+cx*.6)/14*.5)*3,1,1);
+      for(let i=0;i<30;i++){const x=((i*73+Math.sin(tm+i)*8-cx*.3)%(VW+10)+VW+10)%(VW+10)-5,y=((i*47+tm*(14+i%3*6))%(VH+10))-5;ctx.fillStyle=fc[i%5];ctx.fillRect(x,y,2,1)}}}
   else if(L.theme==='neve'){ctx.fillStyle='#ffffff';
     for(let i=-1;i<VW/90+2;i++){const k=Math.floor(cx*.15/90)+i,x=k*90-cx*.15,h=50+((k*37)%30+30)%30;ctx.fillStyle='#b9cce0';ctx.beginPath();ctx.moveTo(x-10,118+YOFF);ctx.lineTo(x+45,118+YOFF-h);ctx.lineTo(x+100,118+YOFF);ctx.fill();
       ctx.fillStyle='#ffffff';ctx.beginPath();ctx.moveTo(x+45-h*.28,118+YOFF-h*.72);ctx.lineTo(x+45,118+YOFF-h);ctx.lineTo(x+45+h*.28,118+YOFF-h*.72);ctx.lineTo(x+45,118+YOFF-h*.62);ctx.fill()}
@@ -1122,8 +1155,9 @@ function drawTile(t,tx,ty,sx,sy,th,time){
   else if(t==='K'){const on=me()&&me().cpSet.has(tx+'_'+ty);ctx.fillStyle='#6b5a4a';ctx.fillRect(sx+3,sy+1,2,15);ctx.fillStyle=on?'#5cc35a':'#c9c0c0';ctx.fillRect(sx+5,sy+1,8,6)}
   else if(t==='F'){if(L.special)return;ctx.fillStyle='#ead6c8';ctx.fillRect(sx+3,sy-48,2,64);ctx.fillStyle='#f5c542';ctx.fillRect(sx+2,sy-51,4,4);const w=Math.sin(time*5)*1.5;ctx.fillStyle='#e8607f';ctx.fillRect(sx+5,sy-46,14+w,10);ctx.drawImage(S_HEART,sx+8,sy-45)}
   else if(t==='M'){if(letterGot.has(lvIdx))return;const bob=Math.round(Math.sin(time*3)*2);ctx.drawImage(S_MAIL,sx+2,sy+4+bob);if(Math.floor(time*3)%2){ctx.fillStyle='#fff';ctx.fillRect(sx+13,sy+2+bob,1,1)}}
-  else if(t==='P'){const got=bears.some(b=>b.pkg)||(remote&&remote.pkg);if(got)return;const bob=Math.round(Math.sin(time*3)*2);ctx.drawImage(S_PKG,sx+2,sy+5+bob);if(Math.floor(time*3)%2){ctx.fillStyle='#fff';ctx.fillRect(sx+14,sy+3+bob,1,1);ctx.fillRect(sx+1,sy+8+bob,1,1)}}
-  else if(t==='h'||t==='c'){const bob=Math.round(Math.sin(time*4+tx)*1.5);if(t==='h'&&L.theme==='citta')ctx.drawImage(S_CHOC,sx+3,sy+6+bob);else if(t==='h'&&L.theme==='halloween')ctx.drawImage(S_CANDY,sx+2,sy+6+bob);else ctx.drawImage(t==='h'?S_HONEY:S_HEART,sx+(t==='h'?3:4),sy+4+bob)}
+  else if(t==='R'){if(collectedSet().has(tx+'_'+ty))return;const bob=Math.round(Math.sin(time*3+tx)*2);ctx.drawImage(S_GIFTS[tx%5],sx+3,sy+5+bob);if(Math.floor(time*3+tx)%3===0){ctx.fillStyle='#fff';ctx.fillRect(sx+13,sy+4+bob,1,1)}}
+  else if(t==='P'){const got=bears.some(b=>b.pkg)||(remote&&remote.pkg);if(got)return;const bob=Math.round(Math.sin(time*3)*2);ctx.drawImage(L.kind==='bday'?S_CAKE:S_PKG,sx+(L.kind==='bday'?1:2),sy+5+bob);if(Math.floor(time*3)%2){ctx.fillStyle='#fff';ctx.fillRect(sx+14,sy+3+bob,1,1);ctx.fillRect(sx+1,sy+8+bob,1,1)}}
+  else if(t==='h'||t==='c'){const bob=Math.round(Math.sin(time*4+tx)*1.5);if(t==='h'&&L.theme==='citta')ctx.drawImage(S_CHOC,sx+3,sy+6+bob);else if(t==='h'&&L.theme==='festa')ctx.drawImage(S_CUPCAKE,sx+4,sy+4+bob);else if(t==='h'&&L.theme==='halloween')ctx.drawImage(S_CANDY,sx+2,sy+6+bob);else ctx.drawImage(t==='h'?S_HONEY:S_HEART,sx+(t==='h'?3:4),sy+4+bob)}
 }
 function drawCastle(cx){const x=L.castle*T-cx,y=YOFF+9*T;ctx.fillStyle='#ffc6dd';ctx.fillRect(x,y-80,190,80);ctx.fillStyle='#f39ab8';for(let i=0;i<5;i++){ctx.fillRect(x+i*40,y-112,30,112);ctx.fillStyle='#ffe08a';ctx.beginPath();ctx.moveTo(x+i*40-3,y-112);ctx.lineTo(x+i*40+15,y-136);ctx.lineTo(x+i*40+33,y-112);ctx.fill();ctx.fillStyle='#f39ab8'}
   ctx.fillStyle='#fff';for(let i=0;i<9;i++){ctx.fillRect(x+6+i*20,y-70,8,4)}ctx.fillStyle='#e8607f';ctx.beginPath();ctx.arc(x+95,y-26,18,Math.PI,0);ctx.fill();ctx.fillRect(x+77,y-26,36,26);
@@ -1142,8 +1176,9 @@ function drawBear(b,cx,time,isRemote){
   if(b.hugT>0)y-=Math.round(Math.abs(Math.sin(time*8))*4)/2;
   ctx.save();if(b.face<0){ctx.translate(x+w,y);ctx.scale(-1,1);ctx.drawImage(fr,0,0,w,h)}else ctx.drawImage(fr,x,y,w,h);ctx.restore();
   const bx=Math.round(x+4.5),by=Math.round(y+6.5),bw=14;
-  if(L&&L.special&&b.c==='lapapa'&&!b.goal){ctx.fillStyle='#b98cff';ctx.fillRect(bx-1,by+7,bw+2,8);ctx.fillStyle='#9a6ad8';for(let i=0;i<4;i++)ctx.fillRect(bx+i*4,by+7,1,8);ctx.fillStyle='#fde0ea';ctx.fillRect(bx-1,by+7,bw+2,1)}
-  if(L&&L.special&&b.c==='atata'&&b.pkg){ctx.drawImage(S_PKG,bx+(b.face>0?-6:bw-4),by+2,8,7)}
+  if(L&&L.kind==='bday'&&b.c==='lapapa'){ctx.fillStyle='#9b6bd8';ctx.beginPath();ctx.moveTo(bx+3,by+1);ctx.lineTo(bx+7,by-9);ctx.lineTo(bx+11,by+1);ctx.fill();ctx.fillStyle='#f5c542';ctx.fillRect(bx+4,by-2,6,1);ctx.fillRect(bx+6,by-11,2,2)}
+  else if(L&&L.special&&b.c==='lapapa'&&!b.goal){ctx.fillStyle='#b98cff';ctx.fillRect(bx-1,by+7,bw+2,8);ctx.fillStyle='#9a6ad8';for(let i=0;i<4;i++)ctx.fillRect(bx+i*4,by+7,1,8);ctx.fillStyle='#fde0ea';ctx.fillRect(bx-1,by+7,bw+2,1)}
+  if(L&&L.special&&b.c==='atata'&&b.pkg){if(L.kind==='bday')ctx.drawImage(S_CAKE,bx+(b.face>0?-7:bw-4),by+3,10,7);else ctx.drawImage(S_PKG,bx+(b.face>0?-6:bw-4),by+2,8,7)}
   if(b.gl){const f=Math.floor(time*10)%2;ctx.fillStyle='#f5c542';ctx.fillRect(bx-4,by+6-f,5,3);ctx.fillRect(bx+bw-1,by+6-f,5,3);ctx.fillStyle='#d99a1a';ctx.fillRect(bx-4,by+9-f,5,1);ctx.fillRect(bx+bw-1,by+9-f,5,1)}
   if(b.dash>0){ctx.fillStyle='rgba(255,255,255,.7)';for(let i=0;i<3;i++)ctx.fillRect(bx+(b.face>0?-6-i*5:bw+2+i*5),by+4+i*3,4,1)}
 }
@@ -1156,8 +1191,15 @@ function render(time){
     ctx.fillStyle='#ffffff';ctx.fillRect(x+6,y-80,100,13);ctx.fillStyle='#3a9a5a';ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.fillText('FARMACIA',x+56,y-70);
     const on=Math.floor(time*2)%2;ctx.fillStyle=on?'#3ad06a':'#2a8a4a';ctx.fillRect(x+51,y-62,10,26);ctx.fillRect(x+43,y-54,26,10);
     ctx.fillStyle='#a8d8e8';ctx.fillRect(x+8,y-30,24,30);ctx.fillRect(x+80,y-30,24,30);ctx.fillStyle='#6a8aa8';ctx.fillRect(x+44,y-32,24,32)}
+  if(L.bakery){const x=L.bakery*T-cam,y=YOFF+9*T;ctx.fillStyle='#fff1e6';ctx.fillRect(x,y-86,112,86);
+    for(let i=0;i<14;i++){ctx.fillStyle=i%2?'#ffffff':'#f39ab8';ctx.fillRect(x+i*8,y-92,8,10)}
+    ctx.fillStyle='#ffffff';ctx.fillRect(x+6,y-78,100,13);ctx.fillStyle='#c96a8a';ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.fillText('PASTICCERIA',x+56,y-68);
+    ctx.drawImage(S_CAKE,x+48,y-60,16,11);ctx.drawImage(S_CUPCAKE,x+14,y-26);ctx.drawImage(S_CUPCAKE,x+88,y-26);
+    ctx.fillStyle='#a8d8e8';ctx.fillRect(x+8,y-30,24,30);ctx.fillRect(x+80,y-30,24,30);ctx.fillStyle='#c96a8a';ctx.fillRect(x+44,y-32,24,32)}
   if(L.house){const x=L.house*T-cam,y=YOFF+9*T;ctx.fillStyle='#f6c4d6';ctx.fillRect(x,y-80,140,80);ctx.fillStyle='#e8607f';ctx.beginPath();ctx.moveTo(x-8,y-80);ctx.lineTo(x+70,y-118);ctx.lineTo(x+148,y-80);ctx.fill();
     ctx.fillStyle='#fff7ef';ctx.fillRect(x+20,y-62,26,22);ctx.fillRect(x+96,y-62,26,22);ctx.drawImage(S_HEART,x+30,y-56);ctx.drawImage(S_HEART,x+106,y-56);
+    if(L.kind==='bday'){const bc=['#e8475f','#38c8f0','#f5c542','#9b6bd8','#5cc35a'];for(let i=0;i<5;i++){const bxx=x-6+i*36+(i>2?18:0),byy=y-128+Math.sin(time*2+i)*3;ctx.fillStyle='#7a5a3e';ctx.fillRect(bxx+4,byy+10,1,26);ctx.fillStyle=bc[i];ctx.beginPath();ctx.ellipse(bxx+4,byy+4,5,7,0,0,7);ctx.fill()}
+      ctx.fillStyle='#ffffff';ctx.fillRect(x+18,y-100,104,12);ctx.fillStyle='#e8475f';ctx.font='bold 8px monospace';ctx.textAlign='center';ctx.fillText('BUON COMPLEANNO',x+70,y-91)}
     ctx.fillStyle='#9b5b32';ctx.fillRect(x+60,y-36,24,36);ctx.fillStyle='#f5c542';ctx.fillRect(x+78,y-18,3,3);
     ctx.fillStyle='#b98cff';ctx.fillRect(x+88,y-14,40,14);ctx.fillStyle='#9a6ad8';ctx.fillRect(x+88,y-16,40,3)}
   if(L.rocket){const x=L.rocket*T-cam,y=YOFF+9*T;ctx.fillStyle='#c8d2e8';ctx.fillRect(x+20,y-90,26,80);ctx.beginPath();ctx.moveTo(x+20,y-90);ctx.lineTo(x+33,y-118);ctx.lineTo(x+46,y-90);ctx.fillStyle='#ff4d6d';ctx.fill();
