@@ -1349,5 +1349,13 @@ window.__game={sprites,parseOut,get bears(){return bears},get L(){return L},star
 })();
 })();
 </script>
+<script>
+(function(){var BUILD='1794296877';
+  function check(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){
+    if(!j||!j.v||j.v===BUILD)return;var k='al_reloaded_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}
+    location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+  check();document.addEventListener('visibilitychange',function(){if(!document.hidden)check()});
+})();
+</script>
 </body>
 </html>
