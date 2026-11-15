@@ -84,6 +84,10 @@ table.sc th{font-weight:600}
 .alb figcaption{font-size:12px;line-height:1.3;margin-top:4px}
 #albBig figure{margin:0 0 8px}
 .flo{position:absolute;pointer-events:none;transform:translate(-50%,-50%);font-size:18px;transition:none;text-shadow:0 1px 0 #fff}
+.paw{position:relative;width:170px;height:84px;margin:4px auto 2px;background:#f39ab8;border-radius:70px 70px 50px 50px;box-shadow:inset 0 -10px 0 #e48aa6}
+.paw .nl{position:absolute;width:22px;height:30px;border-radius:11px 11px 8px 8px;background:#f39ab8;border:2px solid #fff;overflow:hidden;display:flex;align-items:flex-start;justify-content:center;color:#fff;font-size:11px;line-height:16px}
+.paw .n1{left:14px;top:22px;transform:rotate(-22deg)}.paw .n2{left:44px;top:4px;transform:rotate(-8deg)}.paw .n3{left:74px;top:-2px}.paw .n4{left:104px;top:4px;transform:rotate(8deg)}.paw .n5{left:134px;top:22px;transform:rotate(22deg)}
+.nl.french{background-image:linear-gradient(to bottom,#fff 0 30%,transparent 30%)}.nl.glitter{background-image:radial-gradient(#fff 1px,transparent 1.5px),radial-gradient(#ffe08a 1px,transparent 1.5px);background-size:6px 6px,7px 7px;background-position:0 0,3px 3px}
 #toast{position:absolute;top:52px;left:50%;transform:translateX(-50%);background:#fff7ef;color:#3a2330;border-radius:12px;padding:8px 14px;font-size:15px;box-shadow:0 4px 0 #d9a9b9;display:none;max-width:90%;text-align:center;pointer-events:none}
 #rotate{position:absolute;inset:0;background:#2b1d2f;color:#fff;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;font-size:18px;z-index:9}
 </style>
@@ -164,6 +168,14 @@ table.sc th{font-weight:600}
     <textarea id="saveIn" style="width:100%;min-height:60px;font:12px monospace;border:2px solid #ead6c8;border-radius:10px;padding:6px" placeholder="AL1:..."></textarea>
     <div class="err" id="saveErr"></div>
     <div class="row"><button class="btn alt" id="bSaveLoad">Carica salvataggio</button><button class="btn soft" id="bSaveOk">Indietro</button></div>
+  </div></div>
+
+  <div class="screen" id="sNails"><div class="card">
+    <h2>Scegli le tue unghiette 💅</h2>
+    <div class="paw" id="nailPaw"><div class="nl n1"></div><div class="nl n2"></div><div class="nl n3"></div><div class="nl n4"></div><div class="nl n5"></div></div>
+    <div class="wcat">Colore</div><div class="chips" id="nailCols"></div>
+    <div class="wcat">Stile</div><div class="chips" id="nailStyles"></div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="bNailsOk">Fatto ✨</button></div>
   </div></div>
 
   <div class="screen" id="sWait"><div class="card">
@@ -316,6 +328,9 @@ const S_CHOC=mkSprite(["..yyyy..","rrrrrrrr","rbbbbbbr","rbcbcbbr","rbbbbbbr","r
 const S_CAKE=mkSprite([".....ff.....",".....ww.....",".cccccccccc.","ccpccpccpccc","pppppppppppp","pprpprpprppp","pppppppppppp","bbbbbbbbbbbb"],{f:'#ffb347',w:'#ffffff',c:'#4e2a17',p:'#8a5a34',r:'#fff3e6',b:'#c8d2e8'},'#2a140a');
 const S_GIFTS=[['#9b6bd8','#f5c542'],['#38c8f0','#ffffff'],['#e8475f','#f5c542'],['#5cc35a','#ffffff'],['#f5a623','#e8475f']].map(([r,y])=>mkSprite(["...y.y...","....y....","rrrryrrrr","rrrryrrrr","yyyyyyyyy","rrrryrrrr","rrrryrrrr","rrrryrrrr"],{r,y},'#3a2330'));
 const S_CUPCAKE=mkSprite(["...rr...","..wwww..",".wwwwww.","wwpwwbww",".kkkkkk.",".kdkdkk.",".kkkkkk.","..kkkk.."],{r:'#e8475f',w:'#fde0ea',p:'#38c8f0',b:'#f5c542',k:'#c98a55',d:'#a8683a'},'#6e3d1f');
+const S_POLISH=mkSprite(["..kk..","..kk..","..kk..",".gggg.","pppppp","pPpppp","pPpppp","pppppp",".pppp."],{k:'#2a2330',g:'#c8d2e8',p:'#e8607f',P:'#ffb3c8'},'#5a2a35');
+const S_SHELL=mkSprite(["...pp...","..pPPp..",".pPpPPp.","pPpPpPPp","pPpPpPpp",".pppppp.","..pppp.."],{p:'#f7a8a0',P:'#ffd6cc'},'#a85a50');
+const S_STAR=mkSprite(["...o...","...o...","ooooooo",".ooOoo.","..ooo..",".oo.oo.","o.....o"],{o:'#ff9a4d',O:'#ffd08a'},'#a8501a');
 const S_BEE=mkSprite(["...ww.ww..","...wwwww..",".yykyykyy.","sykyykyyey","yykyykyyyy",".yykyykyy."],{w:'#e6f6ff',y:'#f7c934',k:'#2a1a10',e:'#2a1a10',s:'#2a1a10'},'#2a1a10');
 const S_HOG=mkSprite(["..s.s.s.s...",".ssssssss...","ssssssssbf..","sssssssbfef.","ssssssbffffn","sssssssbfff.",".ssssssbbb..","..dd...dd..."],{s:'#6b4a35',b:'#c99a6a',f:'#f0d2a8',e:'#2a1a10',n:'#2a1a10',d:'#4a3022'},'#2a1a10');
 
@@ -337,6 +352,7 @@ Lvl.prototype={
   owl(x,y,range){this.ents.push({t:'owl',x0:x*T,y0:y*T,range:range*T,id:'w'+x+'_'+y,ph:x*0.61});return this},
   drone(x,y,range){this.ents.push({t:'drone',x0:x*T,y0:y*T,range:range*T,id:'d'+x+'_'+y,ph:x*0.47});return this},
   ship(x,row,range,w){(this.ships=this.ships||[]).push({x0:x*T,y:row*T,range:range*T,w:(w||3)*T,sp:.55,ph:x*.37,cx:x*T,px:x*T});this.hint(x-5,'Salite sulla navicella: vi porta dall’altra parte! Saltate su quando arriva vicino.');return this},
+  water(x0,y0,x1,y1){this.wat=this.wat||new Set();for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){this.g[y][x]='W';this.wat.add(x+'_'+y)}return this},
   ice(a,b){for(let x=a;x<=b;x++)if(this.g[9][x]==='#')this.g[9][x]='I';return this},
   hog(x,range){this.ents.push({t:'hog',x0:x*T,y0:9*T-8,range:range*T,id:'r'+x,ph:x*0.37});return this},
   hint(x,text){this.hints.push({x:x*T,text});return this},
@@ -415,8 +431,23 @@ function buildLevels(){
     .p(75,8,'P').hint(69,'La pasticceria! Prendi la torta di compleanno 🎂').row(81,8,'hhhh').dog(86,3).p(88,7,'=').r(90,5,92,5,'=').p(91,4,'R')
     .pit(95,96).r(99,6,101,6,'=').row(99,5,'hhh').pigeon(104,5,3).p(108,8,'K').crack(112).dog(118,3).p(124,8,'R').pit(127,128).row(131,8,'hhhh').p(141,8,'F')
     .hint(128,'Ci sei quasi: la festa è lì!');
+  const L12=new Lvl(140,'nails','Il Lapapa time 💅');
+  L12.special=true;L12.kind='nails';L12.runner='lapapa';L12.spawn=12;L12.homeX=4;L12.homeFace=1;L12.house2=0;L12.salon=109;L12.chip='💅 Il Lapapa time';
+  L12.ground(0,139).row(15,8,'hhh').hint(13,'È il tuo momento, Lapapa! Vai al centro unghie: Atata ti scrive sul telefono 💅')
+    .pigeon(20,5,3).r(23,6,25,6,'=').row(23,5,'hhh').pit(28,29).p(31,8,'K').dog(36,3).r(40,6,42,6,'=').row(40,5,'cc')
+    .pit(46,52).row(47,6,'hhhh').hint(41,'Buco largo? Salta e plana tenendo premuto ★!').p(55,8,'K').pigeon(60,5,2).r(63,6,65,6,'=').r(67,4,69,4,'=').p(68,3,'c').p(69,3,'M')
+    .pit(72,73).dog(78,3).p(85,8,'K').pit(89,95).row(90,6,'hhhh').pigeon(99,4,2).row(102,8,'hhhh').p(113,8,'F').hint(104,'Ecco il centro unghie! Entra ✨');
+  const L13=new Lvl(150,'mare','Una giornata al mare ☀️');
+  L13.relax=true;L13.spawnRow=5;L13.umbrella=128;L13.chip='🏖️ Una giornata al mare';
+  L13.r(0,6,149,10,'#').r(40,6,86,9,'.').water(40,7,86,9).r(40,10,86,10,'#')
+    .row(6,5,'hhh').hint(3,'Una giornata al mare tutta per voi ☀️ Niente nemici: nuotate, raccogliete conchiglie e stelline e raggiungete l’ombrellone!')
+    .r(14,4,16,4,'=').row(14,3,'hh').row(22,5,'hhhh').p(30,5,'K').r(33,3,35,3,'=').p(34,2,'c')
+    .hint(36,'Il mare! Nell’acqua si nuota: premi SALTA per dare una bracciata ↑').row(45,9,'c').p(52,8,'c').row(58,9,'c').p(64,8,'c').p(70,9,'c').row(76,9,'c').p(82,8,'c')
+    .row(48,6,'hh').row(66,6,'hh').p(90,5,'K').row(94,5,'hhh').r(100,4,102,4,'=').row(100,3,'hhh').p(101,2,'M').row(110,5,'hhhh').row(118,5,'cc').p(131,5,'F')
+    .hint(120,'L’ombrellone! Andateci insieme e godetevi il tramonto 🌅');
+  L13.ents=[];
   L1.p(13,5,'M');L2.p(12,3,'M');L3.p(110,3,'M');L4.p(131,5,'M');L5.p(27,5,'M');L6.p(86,4,'M');
-  return [L1,L2,L3,L4,L5,L6,L8,L9,L7,L10,L11];
+  return [L1,L2,L3,L4,L5,L6,L8,L9,L7,L10,L11,L12,L13];
 }
 const LEVELS=buildLevels();
 const MAIN=8,SECRET=8,SPECIAL=9,SECRET_CODE='BUBUZUCCA';
@@ -516,18 +547,20 @@ let totals={atata:0,lapapa:0};
 let room=null, nroom=null, code=null, partner=null, remote=null, ready=false, lastPres='', lastPresT=0, unsubs=[];
 let partnerWasHere=false, resShown=false;
 
-function newBear(c,x){return {c,out:outfitOf(c),x:x*T,y:8*T+2,w:12,h:14,vx:0,vy:0,on:false,face:1,coyote:0,buf:0,jHeld:false,inv:0,cp:{x:x*T,y:8*T+2},goal:false,honey:0,hearts:0,col:new Set(),sq:new Set(),anim:0,cpSet:new Set(),br:new Set(),dash:0,dcool:0,gl:false,abHeld:false}}
+function isWater(tx,ty){return !!(L&&L.wat&&L.wat.has(tx+'_'+ty))}
+function RUN(){return (L&&L.runner)||'atata'}
+function newBear(c,x){const sr=(L&&L.spawnRow)||8;const nl=c==='lapapa'?store.get('nails'):null;return {nails:(nl&&!(L&&L.kind==='nails'))?nl:null,c,out:outfitOf(c),x:x*T,y:sr*T+2,w:12,h:14,vx:0,vy:0,on:false,face:1,coyote:0,buf:0,jHeld:false,inv:0,cp:{x:x*T,y:sr*T+2},goal:false,honey:0,hearts:0,col:new Set(),sq:new Set(),anim:0,cpSet:new Set(),br:new Set(),dash:0,dcool:0,gl:false,abHeld:false}}
 function startLevel(i){
-  lvIdx=i;L=LEVELS[i];particles=[];hintsShown=new Set();resShown=false;
-  if(L.special){const home=newBear('lapapa',L.house+5);home.npc=true;home.face=-1;
-    if(solo){bears=[newBear('atata',L.spawn),home];active=0}else{bears=[myChar==='atata'?newBear('atata',L.spawn):home];active=0}
-    specStart=performance.now();L.doneT=0;}
+  lvIdx=i;L=LEVELS[i];sunsetT=0;particles=[];hintsShown=new Set();resShown=false;
+  if(L.special){const rn=RUN(),home=newBear(other(rn),L.homeX!==undefined?L.homeX:L.house+5);home.npc=true;home.face=L.homeFace||-1;
+    if(solo){bears=[newBear(rn,L.spawn),home];active=0}else{bears=[myChar===rn?newBear(rn,L.spawn):home];active=0}
+    specStart=performance.now();L.doneT=0;npcT=20+Math.random()*8;}
   else if(solo){bears=[newBear('atata',L.spawn),newBear('lapapa',L.spawn+1)];active=bears.findIndex(b=>b.c===myChar)}
   else{bears=[newBear(myChar,myChar==='atata'?L.spawn:L.spawn+1)];active=0}
   cam=0;mode='play';playing=true;showScreen(null);$('hud').style.display='flex';
   $('touch').style.display=isTouch?'block':'none';$('bS').style.display=(solo&&!L.special)?'flex':'none';setAbLabel();
   if(!solo)store.set('session',{code,char:myChar,lv:i,totals});
-  if(L.special&&!solo&&myChar!=='atata'){$('touch').style.display='none';setTimeout(()=>toast('In questa missione corre Atata per te! Tu aspetti a casa: fai il tifo con ♥ 💋 🤗',5),300)}
+  if(L.special&&!solo&&myChar!==RUN()){$('touch').style.display='none';setTimeout(()=>toast(RUN()==='atata'?'In questa missione corre Atata per te! Tu aspetti a casa: fai il tifo con ♥ 💋 🤗':'Questo è il Lapapa time: lei va a farsi le unghiette! Tu le scrivi da casa, mandale ♥ 💋 🤗',5),300)}
   updateHud();
   idleT=0;farT=0;ambT=30+Math.random()*15;hugDone=false;letterGot=new Set();myLetter=(lettersFor(other(myChar))[i]||'').slice(0,220);for(const [,bb] of bubs)bb.until=0;
   if(L.special)setTimeout(()=>{if(mode!=='play')return;const b=me();if(b)sayPair(b,'start')},900);
@@ -536,10 +569,16 @@ function startLevel(i){
 let idleT=0,farT=0,cudT=0,protCd=6,ambT=20;
 let myEmo=null,lastRemoteEmo=0,emoN=0,abT=0,hugDone=false,reviveCd=0,myLetter='',letterGot=new Set();
 const floaters=[];
-const DEF_LETTERS=['Ogni passo con te è un’avventura ♥','Anche nel bosco più buio, con te ho sempre la luce','Con te mi sento sempre sulle nuvole','Sei la mia estate tutto l’anno','Sei il cristallo più prezioso che ho mai trovato','Tra tutte le stelle del cielo, scelgo sempre te','Anche nel freddo più freddo, con te ho sempre il cuore caldo','In qualsiasi futuro, io voglio essere con te','Sei l’unico incantesimo a cui non voglio sfuggire 🎃','Grazie di prenderti sempre cura di me, anche nei giorni no ♥','Tanti auguri amore mio: con te ogni giorno è una festa ♥'];
+const DEF_LETTERS=['Ogni passo con te è un’avventura ♥','Anche nel bosco più buio, con te ho sempre la luce','Con te mi sento sempre sulle nuvole','Sei la mia estate tutto l’anno','Sei il cristallo più prezioso che ho mai trovato','Tra tutte le stelle del cielo, scelgo sempre te','Anche nel freddo più freddo, con te ho sempre il cuore caldo','In qualsiasi futuro, io voglio essere con te','Sei l’unico incantesimo a cui non voglio sfuggire 🎃','Grazie di prenderti sempre cura di me, anche nei giorni no ♥','Tanti auguri amore mio: con te ogni giorno è una festa ♥','Goditi il tuo Lapapa time: sei bellissima sempre, con o senza smalto ♥','La giornata più bella è quella passata con te ☀️'];
 function lettersFor(c){const a=store.get('letters_for_'+c);return Array.isArray(a)?a:[]}
-let specStart=0;
-function giftCount(){let n=0;for(const b of bears)if(b.c==='atata')n=Math.max(n,b.gifts||0);if(remote&&remote.c==='atata')n=Math.max(n,remote.gifts||0);return n}
+let specStart=0,npcT=22,sunsetT=0;
+function startSunset(){sunsetT=performance.now();const A=bears.find(b=>b.c==='atata')||(remote&&remote.c==='atata'?remote:null),Lp=bears.find(b=>b.c==='lapapa')||(remote&&remote.c==='lapapa'?remote:null);
+  const ux=L.umbrella*T;for(const b of bears){b.x=ux+(b.c==='atata'?8:42);b.face=b.c==='atata'?1:-1;b.vx=0}
+  const script=[[A,'Che bello stare qui con te ☀️'],[Lp,'Vorrei che questo momento non finisse mai ♥'],[A,'Ti amo, Lapapa'],[Lp,'Ti amo anch’io, Atata 🌅']];
+  script.forEach(([b,t],i)=>setTimeout(()=>{if(b&&(mode==='play'||mode==='pause'))showBubble(bubKey(b),b,t,b.c)},600+i*2300));
+  setTimeout(()=>{for(const b of [A,Lp])if(b)floatAt(b,'♥',4,30)},600+4*2300);
+  setTimeout(()=>{if(mode==='play'||mode==='pause')showResults()},600+4*2300+2200)}
+function giftCount(){const rn=RUN();let n=0;for(const b of bears)if(b.c===rn)n=Math.max(n,b.gifts||0);if(remote&&remote.c===rn)n=Math.max(n,remote.gifts||0);return n}
 function partyTime(x){const cols=['#e8475f','#f5c542','#38c8f0','#5cc35a','#9b6bd8','#ff8fc6'];for(let k=0;k<6;k++)setTimeout(()=>{for(let i=0;i<14;i++)burst(x-40+Math.random()*120,40+Math.random()*60,cols[(i+k)%6],1)},k*180);
   if(!AC||muted)return;const t0=AC.currentTime+.2,q=.28;const N=[[67,.75],[67,.25],[69,1],[67,1],[72,1],[71,2],[67,.75],[67,.25],[69,1],[67,1],[74,1],[72,2]];let tt=t0;for(const [n,d] of N){tone(mf(n),q*d*.95,'square',.05,tt);tt+=q*d}}
 function me(){return bears[active]}
@@ -583,10 +622,12 @@ function stepBear(b,dt,inp){
   else{const target=dir*SPEED;const ft=tileAt(Math.floor((b.x+b.w/2)/T),Math.floor((b.y+b.h+1)/T));b.vx+=(target-b.vx)*Math.min(1,dt*(b.on?(ft==='I'?1.8:14):8));if(dir)b.face=dir}
   if(inp.jump&&!b.jHeld)b.buf=.12;b.jHeld=inp.jump;
   b.coyote=b.on?.09:b.coyote-dt;b.buf-=dt;
-  if(b.buf>0&&b.coyote>0&&b.dash<=0){b.vy=-JUMP;b.buf=0;b.coyote=0;b.on=false;SFX.jump()}
+  const wcx=Math.floor((b.x+b.w/2)/T),inW=isWater(wcx,Math.floor((b.y+b.h*.55)/T));b.inW=inW;
+  if(inW&&b.buf>0){const atSurf=!isWater(wcx,Math.floor((b.y-12)/T));b.vy=atSurf?-310:Math.max(-260,Math.min(b.vy,0)-210);b.padT=.35;b.buf=0;b.on=false;tone(500,.12,'triangle',.05,0,300);burst(b.x+6,b.y+4,'#e6f6ff',4)}
+  else if(b.buf>0&&b.coyote>0&&b.dash<=0){b.vy=-JUMP;b.buf=0;b.coyote=0;b.on=false;SFX.jump()}
   if(b.padT>0)b.padT-=dt;
   if(!inp.jump&&b.vy<-120&&!isTouch&&!(b.padT>0))b.vy=-120;
-  b.vy+=G*dt;if(b.vy>MAXFALL)b.vy=MAXFALL;
+  if(inW){b.vy+=G*.28*dt;if(b.vy>70)b.vy=70;b.vx*=1-Math.min(1,dt*2.5)}else{b.vy+=G*dt;if(b.vy>MAXFALL)b.vy=MAXFALL}
   b.gl=false;if(b.c==='lapapa'&&!b.on&&b.vy>0&&(inp.ab||(inp.jump&&!isTouch))){if(b.vy>45)b.vy=45;if(!b.gl&&!b.glSaid&&isMine(b)){b.glSaid=true;say(b,'glide')}b.gl=true}
   // X
   let nx=b.x+b.vx*dt;nx=Math.max(0,Math.min(L.w*T-b.w,nx));
@@ -660,13 +701,13 @@ function checkItems(b){
     if(t==='M'&&b===me()&&!letterGot.has(lvIdx)){letterGot.add(lvIdx);burst(tx*T+8,ty*T+8,'#f39ab8',12);setTimeout(()=>{if(mode==='play')openLetter(b)},250)}
     if(t==='K'&&!b.cpSet.has(id)){b.cpSet.add(id);const cp={x:tx*T+2,y:ty*T+2};if(cp.x>b.cp.x)b.cp=cp;SFX.cp();if(b===me())toast('Checkpoint per tutti e due!',1.2);
       if(solo)for(const o of bears)if(o!==b&&cp.x>o.cp.x){o.cp=cp;o.cpSet.add(id)}}
-    if(t==='R'&&b.c==='atata'&&!collectedSet().has(id)){b.col.add(id);b.gifts=(b.gifts||0)+1;SFX.heart();burst(tx*T+8,ty*T+8,'#f5c542',14);toast('Regalo trovato! 🎁 '+giftCount()+'/'+L.giftTotal,1.8);if(isMine(b))say(b,'gift',.8)}
-    if(t==='P'&&L.special&&b.c==='atata'&&!b.pkg){b.pkg=true;SFX.heart();burst(tx*T+8,ty*T+8,'#f39ab8',16);toast(L.kind==='bday'?(giftCount()>=L.giftTotal?'Torta presa! 🎂 Ora corri alla festa!':'Torta presa! 🎂 Ora corri alla festa (e trova i regali!)'):'Assorbenti presi! Ora corri da Lapapa 💗',3);if(isMine(b)){convCd=0;b.sayCd=0;sayPair(b,'pkg')}}
-    if(t==='F'&&!b.goal&&L.special&&(b.c!=='atata'||!b.pkg)){if(b.c==='atata'&&!b.warnPkg){b.warnPkg=true;toast(L.kind==='bday'?'Hai dimenticato la torta! Torna in pasticceria 🎂':'Hai dimenticato gli assorbenti! Torna in farmacia 🩷',3)}continue}
+    if(t==='R'&&b.c===RUN()&&!collectedSet().has(id)){b.col.add(id);b.gifts=(b.gifts||0)+1;SFX.heart();burst(tx*T+8,ty*T+8,'#f5c542',14);toast('Regalo trovato! 🎁 '+giftCount()+'/'+L.giftTotal,1.8);if(isMine(b))say(b,'gift',.8)}
+    if(t==='P'&&L.special&&b.c===RUN()&&!b.pkg){b.pkg=true;SFX.heart();burst(tx*T+8,ty*T+8,'#f39ab8',16);toast(L.kind==='bday'?(giftCount()>=L.giftTotal?'Torta presa! 🎂 Ora corri alla festa!':'Torta presa! 🎂 Ora corri alla festa (e trova i regali!)'):'Assorbenti presi! Ora corri da Lapapa 💗',3);if(isMine(b)){convCd=0;b.sayCd=0;sayPair(b,'pkg')}}
+    if(t==='F'&&!b.goal&&L.special&&(b.c!==RUN()||(L.kind!=='nails'&&!b.pkg))){if(b.c===RUN()&&!b.warnPkg){b.warnPkg=true;toast(L.kind==='bday'?'Hai dimenticato la torta! Torna in pasticceria 🎂':'Hai dimenticato gli assorbenti! Torna in farmacia 🩷',3)}continue}
     if(t==='F'&&!b.goal){b.goal=true;b.vx=0;SFX.goal();burst(tx*T+8,ty*T,'#f5c542',14);
       const otherName=solo?CHARS[other(b.c)].name:(partner?CHARS[other(myChar)].name:'l’altro');
       if(b===me())toast(L.special?'Sei arrivato da Lapapa! 💗':'Traguardo! Ora aspetta '+otherName+'.',2.5);
-      if(L.special){L.doneT=performance.now();if(L.kind==='bday')partyTime(tx*T);if(isMine(b))setTimeout(()=>{convCd=0;b.sayCd=0;sayPair(b,'arrive')},500)}
+      if(L.special){L.doneT=performance.now();if(L.kind==='bday')partyTime(tx*T);if(L.kind==='nails'&&isMine(b))setTimeout(()=>{if(mode==='play')openNails(b)},1600);if(isMine(b))setTimeout(()=>{convCd=0;b.sayCd=0;sayPair(b,'arrive')},500)}
       else{const oth=solo?bears.find(x=>x!==b):remote;if(isMine(b)&&!(oth&&oth.goal))setTimeout(()=>say(b,'goal'),600)}}
   }
 }
@@ -724,6 +765,15 @@ const TL={
    lapapa:[['Ho paura del buio… mi abbracci?','Ti abbraccio fortissimo ♥'],['I cristalli brillano come i tuoi occhi','I tuoi brillano di più']]},
   amb:{atata:[['Ecooo… Lapapa ti amaaa…','L’eco risponde: anche io ♥'],['Ti regalo un cristallo rosa','È del mio colore preferito!'],['Se hai paura canto una canzoncina','Canta pure, ma piano piano']],
    lapapa:[['Eco eco! Atata è un tontolone!','Ehi! Ti ho sentita!'],['Qui fa freschino… scaldami','Vieni qui, ti scaldo io'],['Mi è caduto un cristallo? No, era il mio cuore','Lo raccolgo io e lo tengo stretto ♥']]}},
+ nails:{start:{lapapa:[['Vado a farmi le unghiette! ✨','Amore, quando arrivi fammi sapere ♥'],['Un po’ di tempo tutto per me 💅','Buon Lapapa time, amore!']],
+   atata:[['Amore, quando arrivi fammi sapere ♥','Certo orsetto, ti scrivo! ✨'],['Buon Lapapa time! Rilassati ♥','Grazie amore 🥰']]},
+  amb:{lapapa:[['Sono indecisa sul colore…','Prendi quello che ti piace, starai benissimo ♥'],['Che bella giornata per coccolarsi un po’','Te lo meriti tutto, amore'],['Quasi arrivata!','Fammi sapere quando sei lì ♥']],
+   atata:[['Hai già scelto il colore? 💅','Forse rosa… o lilla? 🤔'],['Buon Lapapa time! Goditelo ♥','Grazie orsetto 🥰'],['Poi mi mandi la foto delle unghiette?','Promesso! 📸'],['Che stile fai? French, glitter…?','Sorpresa! Hihi'],['Quando arrivi fammi sapere eh ♥','Sì sì, ti scrivo subito!']]},
+  arrive:{lapapa:[['Arrivata! 💅','Brava amore, buon Lapapa time ♥']],atata:[['È arrivata? 🥺','Arrivata! Ora scelgo il colore ✨']]}},
+ mare:{start:{atata:[['Che bella giornata! Andiamo al mare ☀️','Prima però la crema solare!'],['Ti porto in spiaggia, principessa','E io porto i teli e l’ombrellone ♥']],
+   lapapa:[['Finalmente il mare con te! 🌊','Il posto più bello del mondo, con te'],['Facciamo il bagno insieme?','Sì! Chi arriva prima in acqua!']]},
+  amb:{atata:[['L’acqua è fresca, vieni!','Arrivo, ma non schizzarmi!'],['Ti raccolgo una conchiglia','La teniamo come ricordo ♥'],['Facciamo il morto a galla?','Mano nella mano ♥']],
+   lapapa:[['Guarda, una stella marina!','Bella come te ⭐'],['Mi tieni la zampa mentre nuoto?','Sempre, amore'],['Dopo gelato sotto l’ombrellone?','Al cioccolato per te ♥']]}},
  festa:{start:{atata:[['Oggi è il giorno speciale della mia Lapapa! Corro!','Ti aspetto, amore 🥰'],['Torta e regali per la mia principessa: missione compleanno!','Sbrigati che sono curiosa 🙈']],
    lapapa:[['Atata, ti sei ricordato che giorno è oggi? 🥺','Certo amore, come potrei dimenticarlo ♥'],['Oggi compio gli anni! 🥳','Lo so, e sto arrivando con una sorpresa!']]},
   amb:{atata:[['Questo regalo le piacerà tantissimo','Che cos’è? Che cos’è? 🙈'],['Chissà se le piace la torta al cioccolato','La adoro! 🍫'],['Devo trovare tutti i regali!','Non vedo l’ora di aprirli!'],['La mia Lapapa compie gli anni ed è sempre più bella','Smettila che arrossisco 🥰'],['Tanti auguri a te… shh, è una sorpresa!','Ho sentito tutto 😂']],
@@ -772,11 +822,13 @@ let convCd=0;
 const BDAY_LINES={heart:{atata:['Un cuoricino in più per la festeggiata ♥']},gift:{atata:['Un regalo! Questo è per lei 🎁','Un altro regalo per la mia Lapapina!','Questo le piacerà tantissimo!']},
   hurt:{atata:['Ahia! Ma la torta è salva!','Non mi fermo, è il suo compleanno!']},squash:{atata:['Scusa, ho una festa da raggiungere!','Fate passare il fattorino del compleanno!']},
   dash:{atata:['Fate largo, è il compleanno della mia Lapapa!']},idle:{atata:['Non posso fermarmi, la festa mi aspetta!'],lapapa:['Atata, arrivi? 🥺','Quanto manca? Sono curiosa! 🙈']}};
+const NAILS_LINES={heart:{lapapa:['Un cuoricino! ✨']},hurt:{lapapa:['Ahi! Meno male che non ho ancora lo smalto 😂','Uffa, che sbadata!']},
+  squash:{lapapa:['Scusa piccione, ho un appuntamento!','Fate passare, è il mio momento ✨']},idle:{lapapa:['Su, che la manicurista mi aspetta!'],atata:['Allora, sei arrivata? 🥺','Mi manchi già…']}};
 const SPEC_LINES={heart:{atata:['Un cuoricino per la mia Lapapa ♥','Questo glielo porto!']},hurt:{atata:['Ahia! Ma non mi arrendo!','Non c’è tempo per farsi male!','Niente mi ferma, Lapapa mi aspetta!']},
   squash:{atata:['Scusa, vado di fretta: è un’emergenza!','Fate passare, missione importante!','Scusa piccione, devo correre!']},dash:{atata:['Fate largo! Missione assorbenti!','Nessun muro mi separa dalla mia Lapapa!']},
   idle:{atata:['Non posso fermarmi, Lapapa mi aspetta!','Su, su, che lei ha il pancino che fa male!'],lapapa:['Atata, ci sei? 🥺','Mi manchi… torna presto']}};
 function say(b,key,chance){
-  if(L&&L.special){const SL=L.kind==='bday'?BDAY_LINES:SPEC_LINES;const sl=SL[key]&&SL[key][b&&b.c];if(!sl)return false;if(chance&&Math.random()>chance)return false;const now=performance.now();if((b.sayCd&&now<b.sayCd)||now<convCd)return false;convCd=now+9000;b.sayCd=now+4500;const text=pick(sl);showBubble(bubKey(b),b,text,b.c);if(!solo){mySay={id:++sayN,t:text,ts:Date.now()};sendPresence(true)}return true}
+  if(L&&L.special){const SL=L.kind==='bday'?BDAY_LINES:L.kind==='nails'?NAILS_LINES:SPEC_LINES;const sl=SL[key]&&SL[key][b&&b.c];if(!sl)return false;if(chance&&Math.random()>chance)return false;const now=performance.now();if((b.sayCd&&now<b.sayCd)||now<convCd)return false;convCd=now+9000;b.sayCd=now+4500;const text=pick(sl);showBubble(bubKey(b),b,text,b.c);if(!solo){mySay={id:++sayN,t:text,ts:Date.now()};sendPresence(true)}return true}
   if(!b||!LINES[key]||(chance&&Math.random()>chance))return false;const now=performance.now();if(b.sayCd&&now<b.sayCd)return false;if(now<convCd)return false;convCd=now+14000;
   const text=pick(LINES[key][b.c]||['']);if(!text)return false;b.sayCd=now+4500;showBubble(bubKey(b),b,text,b.c);
   if(solo){const o=bears.find(x=>x!==b);if(o)setTimeout(()=>{if(mode!=='play'&&mode!=='res')return;const r=pick(REPLY[key][o.c]||['']);if(r){o.sayCd=performance.now()+3000;showBubble(bubKey(o),o,r,o.c)}},1800)}
@@ -860,8 +912,8 @@ $('bLetClose').onclick=()=>{mode='play';showScreen(null)};
 // ---------- album ----------
 let photoMode=false;
 function capturePhoto(){try{
-  let fx=0;for(let x=0;x<L.w;x++)if(L.g[8][x]==='F')fx=x*T;
-  const saveCam=cam;cam=Math.max(0,Math.min(L.w*T-VW,fx-22-VW/2));photoMode={fx};ctx.setTransform(2,0,0,2,0,0);render(performance.now()/1000);photoMode=false;cam=saveCam;
+  let fx=0,fy=8;for(let y=0;y<ROWS;y++)for(let x=0;x<L.w;x++)if(L.g[y][x]==='F'){fx=x*T;fy=y}
+  const saveCam=cam;cam=Math.max(0,Math.min(L.w*T-VW,fx-22-VW/2));photoMode={fx,fy};ctx.setTransform(2,0,0,2,0,0);render(performance.now()/1000);photoMode=false;cam=saveCam;
   const c=document.createElement('canvas');c.width=cv.width;c.height=cv.height+44;const x=c.getContext('2d');x.drawImage(cv,0,0);
   x.fillStyle='#fffaf2';x.fillRect(0,cv.height,c.width,44);x.fillStyle='#3a2330';x.font='600 20px Fredoka, sans-serif';x.textAlign='center';
   const d=new Date().toLocaleDateString('it-IT');x.fillText('Atata ♥ Lapapa  ·  '+L.name+'  ·  '+d,c.width/2,cv.height+29);
@@ -875,6 +927,20 @@ function openAlbum(){mode='album';showScreen('sAlbum');const al=store.get('album
 $('bAlbum').onclick=()=>{audioInit();openAlbum()};
 $('bAlbOk').onclick=()=>{mode='menu';showScreen('sMenu');refreshMenu()};
 
+// ---------- unghiette ----------
+const NAIL_COLS=[['Rosa','#f39ab8'],['Rosso','#e8475f'],['Lilla','#b98cff'],['Azzurro','#7fc8f0'],['Nude','#e9c2a6'],['Nero','#2a2330'],['Oro','#e8b84a'],['Verde menta','#8fe0c0']];
+const NAIL_STYLES=[['Tinta unita',''],['French','french'],['Glitter','glitter'],['Cuoricini','♥'],['Fiorellini','✿']];
+let nailSel={c:0,s:0};
+function paintNails(el,sel){const col=NAIL_COLS[sel.c][1],st=NAIL_STYLES[sel.s][1];el.querySelectorAll('.nl').forEach(n=>{n.style.backgroundColor=col;n.className=n.className.split(' ').filter(x=>x==='nl'||/^n\d$/.test(x)).join(' ')+(st==='french'||st==='glitter'?' '+st:'');n.textContent=(st==='♥'||st==='✿')?st:''})}
+function nailText(sel){return NAIL_COLS[sel.c][0]+(sel.s?' con '+(['','la French','i glitter','i cuoricini','i fiorellini'][sel.s]):'')}
+function openNails(b){mode='nails';showScreen('sNails');const st=store.get('nails');if(st&&NAIL_COLS[st.c]&&NAIL_STYLES[st.s])nailSel={c:st.c,s:st.s};
+  const draw=()=>{const cc=$('nailCols');cc.innerHTML='';NAIL_COLS.forEach(([n,c],i)=>{const x=document.createElement('button');x.className='chip'+(i===nailSel.c?' sel':'');x.innerHTML='<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:'+c+';margin-right:5px;vertical-align:-1px;border:1px solid #0002"></span>'+n;x.onclick=()=>{nailSel.c=i;SFX.plate();draw()};cc.appendChild(x)});
+    const ss=$('nailStyles');ss.innerHTML='';NAIL_STYLES.forEach(([n],i)=>{const x=document.createElement('button');x.className='chip'+(i===nailSel.s?' sel':'');x.textContent=n;x.onclick=()=>{nailSel.s=i;SFX.plate();draw()};ss.appendChild(x)});paintNails($('nailPaw'),nailSel)};draw();
+  $('bNailsOk').onclick=()=>{store.set('nails',nailSel);b.nails={c:nailSel.c,s:nailSel.s};SFX.goal();mode='play';showScreen(null);floatAt(b,'💅',3);floatAt(b,'✨',3);
+    const t=pick(['Fatto! Ho scelto '+nailText(nailSel)+' ✨','Unghiette fatte: '+nailText(nailSel)+' 💅']);const r=pick(['Che bello amore! '+NAIL_COLS[nailSel.c][0]+'? Starai benissimo ♥','Mandami subito la foto! 📸 Sei bellissima','Buon Lapapa time, amore ♥ Il colore è perfetto']);
+    convCd=0;b.sayCd=0;showBubble(bubKey(b),b,t,b.c);
+    if(solo){const o=bears[1];if(o)setTimeout(()=>showBubble(bubKey(o),o,r,o.c),1600)}else{mySay={id:++sayN,t,rt:r,ts:Date.now()};sendPresence(true)}}}
+
 // ---------- particelle & toast ----------
 function burst(x,y,col,n){for(let i=0;i<n;i++){const a=Math.random()*6.28,s=30+Math.random()*60;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-30,l:.6+Math.random()*.3,col})}}
 function toast(msg,sec){const el=$('toast');el.textContent=msg;el.style.display='block';toastT=sec||2}
@@ -885,7 +951,7 @@ function presenceState(){
   const ok=outKey(outfitOf(myChar));
   if(mode==='wait')return {c:myChar,st:'wait',rdy:ready,o:ok,sel:selLv,host:iCreated?1:0,pr:myProg()};
   if(!b)return {c:myChar,st:mode,o:ok};
-  return {c:myChar,st:mode==='res'?'res':'play',rdy:ready,lv:lvIdx,x:Math.round(b.x*10)/10,y:Math.round(b.y*10)/10,vx:Math.round(b.vx),vy:Math.round(b.vy),f:b.face,g:b.goal?1:0,ho:b.honey,he:b.hearts,col:[...b.col],sq:[...b.sq],tot:totals[myChar]||0,inv:b.inv>0?1:0,br:[...b.br],gl:b.gl?1:0,ds:b.dash>0?1:0,o:ok,pr:myProg(),pkg:b.pkg?1:0,gifts:b.gifts||0,jump:jumpMsg,cp:[Math.round(b.cp.x),Math.round(b.cp.y)],say:mySay,emo:myEmo,ab:abT,ko:b.ko>0?1:0,lt:myLetter};
+  return {c:myChar,st:mode==='res'?'res':'play',rdy:ready,lv:lvIdx,x:Math.round(b.x*10)/10,y:Math.round(b.y*10)/10,vx:Math.round(b.vx),vy:Math.round(b.vy),f:b.face,g:b.goal?1:0,ho:b.honey,he:b.hearts,col:[...b.col],sq:[...b.sq],tot:totals[myChar]||0,inv:b.inv>0?1:0,br:[...b.br],gl:b.gl?1:0,ds:b.dash>0?1:0,o:ok,pr:myProg(),pkg:b.pkg?1:0,nails:b.nails||null,gifts:b.gifts||0,jump:jumpMsg,cp:[Math.round(b.cp.x),Math.round(b.cp.y)],say:mySay,emo:myEmo,ab:abT,ko:b.ko>0?1:0,lt:myLetter};
 }
 function sendPresence(force){
   if(!nroom||solo)return;const now=performance.now();if(!force&&now-lastPresT<40)return;
@@ -900,11 +966,11 @@ function onPeers(ch){
   partnerWasHere=!!p;
   if(p){const s=p.presence;mergeProg(s.pr);
     if(!remote||remote.peer!==p.peer)remote={peer:p.peer,x:s.x||0,y:s.y||0,w:12,h:14,vis:false};
-    Object.assign(remote,{out:parseOut(s.c==='lapapa'?'lapapa':'atata',s.o),c:s.c,tx:s.x,ty:s.y,vx:s.vx||0,vy:s.vy||0,face:s.f||1,goal:!!s.g,honey:s.ho||0,hearts:s.he||0,col:new Set(s.col||[]),sq:new Set(s.sq||[]),lv:s.lv,st:s.st,rdy:!!s.rdy,tot:s.tot||0,inv:!!s.inv,br:new Set(s.br||[]),gl:!!s.gl,dash:s.ds?1:0,at:p.updatedAt});
+    Object.assign(remote,{out:parseOut(s.c==='lapapa'?'lapapa':'atata',s.o),c:s.c,tx:s.x,ty:s.y,vx:s.vx||0,vy:s.vy||0,face:s.f||1,goal:!!s.g,honey:s.ho||0,hearts:s.he||0,col:new Set(s.col||[]),sq:new Set(s.sq||[]),lv:s.lv,st:s.st,rdy:!!s.rdy,tot:s.tot||0,inv:!!s.inv,nails:(s.nails&&NAIL_COLS[s.nails.c])?s.nails:null,br:new Set(s.br||[]),gl:!!s.gl,dash:s.ds?1:0,at:p.updatedAt});
     if(Array.isArray(s.cp)&&s.lv===lvIdx&&bears[0]&&s.cp[0]>bears[0].cp.x){bears[0].cp={x:s.cp[0],y:s.cp[1]};const k=Math.floor(s.cp[0]/T)+'_'+Math.floor(s.cp[1]/T);bears[0].cpSet.add(k)}
     if(s.jump&&s.jump.id!==lastJump){const fresh=Date.now()-s.jump.id<8000;lastJump=s.jump.id;
       if(fresh&&(mode==='play'||mode==='res'||mode==='pause'||mode==='letter')&&s.jump.lv!==lvIdx&&LEVELS[s.jump.lv]){startLevel(s.jump.lv);toast(CHARS[s.c].name+' ha scelto: '+LEVELS[s.jump.lv].name,3)}}
-    onRemoteSay(s.say);onRemoteEmo(s.emo);remote.abT=s.ab||0;remote.pkg=!!s.pkg;remote.gifts=s.gifts||0;if(s.ko&&!remote.ko&&mode==='play'){toast(CHARS[s.c].name+' è '+gx(s.c,'svenuto','svenuta')+'! Corri a '+gx(s.c,'salvarlo','salvarla')+' con un bacino 💋',4)}remote.ko=!!s.ko;remote.lt=typeof s.lt==='string'?s.lt.slice(0,220):'';
+    onRemoteSay(s.say);onRemoteEmo(s.emo);remote.abT=s.ab||0;remote.pkg=!!s.pkg;remote.nails=(s.nails&&NAIL_COLS[s.nails.c]&&NAIL_STYLES[s.nails.s])?s.nails:null;remote.gifts=s.gifts||0;if(s.ko&&!remote.ko&&mode==='play'){toast(CHARS[s.c].name+' è '+gx(s.c,'svenuto','svenuta')+'! Corri a '+gx(s.c,'salvarlo','salvarla')+' con un bacino 💋',4)}remote.ko=!!s.ko;remote.lt=typeof s.lt==='string'?s.lt.slice(0,220):'';
     if(Math.abs(remote.x-(s.x||0))>64||Math.abs(remote.y-(s.y||0))>64){remote.x=s.x||0;remote.y=s.y||0}
   }else remote=null;
   refreshWait();
@@ -939,7 +1005,7 @@ function refreshMenu(){pickUI($('pickMenu'),refreshMenu);$('secRow').style.displ
 // ---------- scelta del livello ----------
 let iCreated=false,lastJump=0;
 function doneSet(){const a=store.get('done');return new Set(Array.isArray(a)?a:[])}
-function isUnlocked(i){if(i===0||(LEVELS[i]&&LEVELS[i].special))return true;if(i>=MAIN)return !!store.get('secret');const d=doneSet();return d.has(i)||d.has(i-1)}
+function isUnlocked(i){if(i===0||(LEVELS[i]&&(LEVELS[i].special||LEVELS[i].relax)))return true;if(i>=MAIN)return !!store.get('secret');const d=doneSet();return d.has(i)||d.has(i-1)}
 let selLv=+(store.get('selLv')||0);if(!LEVELS[selLv]||!isUnlocked(selLv))selLv=0;
 function setSel(i){selLv=i;store.set('selLv',i)}
 function lvChips(el,cur,onPick,readonly){el.innerHTML='';const d=doneSet();
@@ -1026,7 +1092,7 @@ $('hudLvl').style.pointerEvents='auto';$('hudLvl').onclick=togglePause;
 
 function pts(h,c){return h+c*3}
 function showResults(){
-  capturePhoto();resShown=true;mode='res';const isSec=lvIdx>=MAIN;{const d=doneSet();if(!d.has(lvIdx)){d.add(lvIdx);store.set('done',[...d])}}
+  capturePhoto();resShown=true;mode='res';const isSec=lvIdx===SECRET;{const d=doneSet();if(!d.has(lvIdx)){d.add(lvIdx);store.set('done',[...d])}}
   let A,B;
   if(solo){A=bears.find(b=>b.c==='atata');B=bears.find(b=>b.c==='lapapa');A={c:'atata',honey:A.honey,hearts:A.hearts};B={c:'lapapa',honey:B.honey,hearts:B.hearts}}
   else{const m=bears[0];const r=remote||{honey:0,hearts:0};A={c:myChar,honey:m.honey,hearts:m.hearts};B={c:other(myChar),honey:r.honey,hearts:r.hearts}}
@@ -1038,9 +1104,16 @@ function showResults(){
   $('resTable').innerHTML='<tr><th></th><th>'+(isSec?'Caramelle':'Miele')+'</th><th>Cuori</th><th>Livello</th><th></th></tr>'+rows;
   const win=pa===pb?null:(pa>pb?A.c:B.c);
   const lines=win?[`${CHARS[win].name} vince questo livello! ${CHARS[other(win)].name}, la rivincita è tua.`,`${CHARS[win].name} ha fatto il pieno… ${CHARS[other(win)].name}, non farti battere ancora!`]:['Pareggio perfetto: siete proprio una squadra! ♥'];
-  if(L.special){const at=solo?bears[0]:(myChar==='atata'?bears[0]:(remote||{honey:0,hearts:0}));const tm=fmtTime((L.doneT||performance.now())-specStart);
+  if(L.relax){const A=bears.find(b=>b.c==='atata')||remote||{honey:0,hearts:0},Lp=bears.find(b=>b.c==='lapapa')||remote||{honey:0,hearts:0};
+    $('resTitle').textContent='Che bella giornata al mare ☀️';
+    $('resTable').innerHTML=`<tr><th></th><th>Conchiglie</th><th>Stelline e cuori</th></tr><tr><td><b>Atata</b></td><td>🐚 ${A.honey||0}</td><td>⭐ ${A.hearts||0}</td></tr><tr><td><b>Lapapa</b></td><td>🐚 ${Lp.honey||0}</td><td>⭐ ${Lp.hearts||0}</td></tr>`;
+    $('resMsg').textContent='Una giornata perfetta, insieme ♥ Nessuna gara oggi: solo voi due, il mare e il tramonto.';$('bNext').textContent='Torna al livello 1';showScreen('sRes');return}
+  if(L.special){const at=solo?bears[0]:(myChar===RUN()?bears[0]:(remote||{honey:0,hearts:0}));const tm=fmtTime((L.doneT||performance.now())-specStart);
     const bk='specBest_'+lvIdx;const best=store.get(bk);const ms=(L.doneT||performance.now())-specStart;if(!best||ms<best)store.set(bk,Math.round(ms));const rec=(best&&ms>=best?' (record: '+fmtTime(best)+')':' — nuovo record!');
-    if(L.kind==='bday'){const g=giftCount();$('resTitle').textContent='Buon compleanno Lapapa! 🎂';
+    if(L.kind==='nails'){const ns=(solo||myChar===RUN()?bears[0].nails:(remote&&remote.nails))||{c:0,s:0};$('resTitle').textContent='Buon Lapapa time! 💅';
+      $('resTable').innerHTML=`<tr><th></th><th>Unghiette</th><th>Smalti</th><th>Tempo</th></tr><tr><td><b>Lapapa</b></td><td><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${NAIL_COLS[ns.c][1]};vertical-align:-2px;border:1px solid #0002"></span> ${nailText(ns)}</td><td>💅 ${at.honey}</td><td>⏱ ${tm}</td></tr>`;
+      $('resMsg').textContent='Atata: «Sei bellissima amore, mi mandi la foto? 📸♥»'+rec}
+    else if(L.kind==='bday'){const g=giftCount();$('resTitle').textContent='Buon compleanno Lapapa! 🎂';
       $('resTable').innerHTML=`<tr><th></th><th>Torta</th><th>Regali</th><th>Dolcetti</th><th>Tempo</th></tr><tr><td><b>Atata</b></td><td>🎂 ✓</td><td>🎁 ${g}/${L.giftTotal}</td><td>🧁 ${at.honey}</td><td>⏱ ${tm}</td></tr>`;
       $('resMsg').textContent=(g>=L.giftTotal?'Lapapa: «Tutti i regali?! È il compleanno più bello della mia vita ♥»':g>0?'Lapapa: «Grazie amore, la torta e i regali sono bellissimi ♥» (ne mancano '+(L.giftTotal-g)+': li trovi la prossima volta?)':'Lapapa: «La torta! Grazie amore, sei dolcissimo ♥» (la prossima volta trova anche i regali 🎁)')+rec}
     else{$('resTitle').textContent='Missione compiuta! 💗';
@@ -1056,9 +1129,9 @@ function showResults(){
 }
 
 // ---------- HUD ----------
-const icH=S_HONEY.toDataURL(),icC=S_HEART.toDataURL(),icK=S_CANDY.toDataURL(),icP=S_CHOC.toDataURL(),icU=S_CUPCAKE.toDataURL();
+const icH=S_HONEY.toDataURL(),icC=S_HEART.toDataURL(),icK=S_CANDY.toDataURL(),icP=S_CHOC.toDataURL(),icU=S_CUPCAKE.toDataURL(),icN=S_POLISH.toDataURL(),icS=S_SHELL.toDataURL();
 function fmtTime(ms){const s=Math.max(0,Math.floor(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
-function hudItem(name,h,c){return `<span class="who">${name}</span><span><img class="ic" src="${L&&L.theme==='halloween'?icK:L&&L.theme==='citta'?icP:L&&L.theme==='festa'?icU:icH}"> ${h}</span><span><img class="ic" src="${icC}"> ${c}</span>`}
+function hudItem(name,h,c){return `<span class="who">${name}</span><span><img class="ic" src="${L&&L.theme==='halloween'?icK:L&&L.theme==='citta'?icP:L&&L.theme==='festa'?icU:L&&L.theme==='nails'?icN:L&&L.theme==='mare'?icS:icH}"> ${h}</span><span><img class="ic" src="${icC}"> ${c}</span>`}
 let hudCache='';
 function updateHud(){
   if(!L)return;let a,b;
@@ -1069,7 +1142,7 @@ function updateHud(){
     else b='<span class="who">in attesa dell’altro… codice '+(code||'')+'</span>'}
   const tmr=L.special&&specStart?' ⏱ '+fmtTime((L.doneT||performance.now())-specStart):'';
   const gf=L.kind==='bday'?' 🎁 '+giftCount()+'/'+L.giftTotal:'';
-  const lv=(L.special?'Speciale':lvIdx>=MAIN?'Segreto':`Liv. ${lvIdx+1}`)+tmr+gf+`<br><span class="who">${L.name}</span>`;
+  const lv=((L.special||L.relax)?'Speciale':lvIdx===SECRET?'Segreto':`Liv. ${lvIdx+1}`)+tmr+gf+`<br><span class="who">${L.name}</span>`;
   const key=a+'|'+b+'|'+lv;if(key===hudCache)return;hudCache=key;
   $('hudMe').innerHTML=a;$('hudOther').innerHTML=b;$('hudLvl').innerHTML=lv;
 }
@@ -1081,6 +1154,8 @@ const TH={
   spiaggia:{sky:'#9fe0ff',far:'#4fb6e0',near:'#7ccdf0',grass:'#f7e2a8',grass2:'#e0c07a',dirt:'#eccb83',dot:'#d4ae66',block:'#e9a35a',block2:'#b06a2e',cloud:'#ffffff'},
   grotta:{sky:'#2f2744',far:'#40365c',near:'#52466f',grass:'#8a7fb0',grass2:'#6a5f90',dirt:'#5d5472',dot:'#4a4260',block:'#7a6aa8',block2:'#4f4475',cloud:'#3a3152'},
   notte:{sky:'#1f2550',far:'#2c356e',near:'#36428a',grass:'#6c7fd8',grass2:'#4b5bb0',dirt:'#3a4580',dot:'#2f3970',block:'#7d6bd0',block2:'#4c3f95',cloud:'#3a4580'},
+  nails:{sky:'#e6dcff',far:'#f3d9b8',near:'#e8c39a',grass:'#d9d2c8',grass2:'#b8ae9f',dirt:'#8c8478',dot:'#7a7266',block:'#c9b3f0',block2:'#8a6ad8',cloud:'#ffffff'},
+  mare:{sky:'#8fd8ff',far:'#3fb0e0',near:'#7ccdf0',grass:'#f7e2a8',grass2:'#e0c07a',dirt:'#eccb83',dot:'#d4ae66',block:'#e9a35a',block2:'#b06a2e',cloud:'#ffffff'},
   festa:{sky:'#ffd9ec',far:'#f3d9b8',near:'#e8c39a',grass:'#d9d2c8',grass2:'#b8ae9f',dirt:'#8c8478',dot:'#7a7266',block:'#f39ab8',block2:'#c96a8a',cloud:'#ffffff'},
   citta:{sky:'#bfe3ff',far:'#f3d9b8',near:'#e8c39a',grass:'#d9d2c8',grass2:'#b8ae9f',dirt:'#8c8478',dot:'#7a7266',block:'#c99a5a',block2:'#8a6534',cloud:'#ffffff'},
   neve:{sky:'#cfe6fb',far:'#e9f3fc',near:'#d3e4f2',grass:'#ffffff',grass2:'#dcecf9',dirt:'#a9bccc',dot:'#91a6b8',block:'#a7e2f5',block2:'#5fb4d6',cloud:'#ffffff'},
@@ -1094,10 +1169,10 @@ function drawBg(th,cx){
   ctx.fillStyle=th.cloud;if(!['notte','grotta','halloween','futuro'].includes(L.theme))for(let i=0;i<14;i++){const x=((i*137-cx*.1)%(VW+120)+VW+120)%(VW+120)-60,y=14+((i*53)%50);ctx.globalAlpha=.85;cloudShape(x,y,18+(i%3)*8);ctx.globalAlpha=1}
   if(L.theme==='prato'){hills(th.far,cx*.2,110,40,90);hills(th.near,cx*.4,130,28,60)}
   else if(L.theme==='bosco'){trees(th.far,cx*.25,96,.8);trees(th.near,cx*.5,112,1)}
-  else if(L.theme==='spiaggia'){ctx.fillStyle='#ffe08a';ctx.beginPath();ctx.arc(VW-60,40,16,0,7);ctx.fill();ctx.fillStyle=th.far;ctx.fillRect(0,118+YOFF,VW,VH);ctx.fillStyle=th.near;for(let i=0;i<VW/12+2;i++){const x=i*12-((cx*.3+Date.now()/60)%12);ctx.fillRect(x,124+YOFF+((i%2)*2),6,2)}ctx.fillStyle='#ffffff';for(let i=0;i<VW/24+2;i++){const x=i*24-((cx*.5)%24);ctx.fillRect(x,150+YOFF,10,2)}}
+  else if(L.theme==='spiaggia'||L.theme==='mare'){ctx.fillStyle='#ffe08a';ctx.beginPath();ctx.arc(VW-60,40,16,0,7);ctx.fill();ctx.fillStyle=th.far;ctx.fillRect(0,118+YOFF,VW,VH);ctx.fillStyle=th.near;for(let i=0;i<VW/12+2;i++){const x=i*12-((cx*.3+Date.now()/60)%12);ctx.fillRect(x,124+YOFF+((i%2)*2),6,2)}ctx.fillStyle='#ffffff';for(let i=0;i<VW/24+2;i++){const x=i*24-((cx*.5)%24);ctx.fillRect(x,150+YOFF,10,2)}}
   else if(L.theme==='grotta'){trees(th.far,cx*.25,120,.9);ctx.fillStyle=th.far;for(let i=-1;i<VW/30+2;i++){const k=Math.floor(cx*.25/30)+i,x=k*30-cx*.25;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x+15,30+(k*13)%25);ctx.lineTo(x+30,0);ctx.fill()}
     const cols=['#7fe3ff','#ff9be0','#b9ff9b'];for(let i=-1;i<VW/50+2;i++){const k=Math.floor(cx*.5/50)+i,x=k*50-cx*.5;ctx.fillStyle=cols[((k%3)+3)%3];ctx.beginPath();ctx.moveTo(x+10,140);ctx.lineTo(x+14,124+(k*7)%8);ctx.lineTo(x+18,140);ctx.fill()}}
-  else if(L.theme==='citta'||L.theme==='festa'){ctx.fillStyle='#fff3c2';ctx.beginPath();ctx.arc(VW-60,34,13,0,7);ctx.fill();
+  else if(L.theme==='citta'||L.theme==='festa'||L.theme==='nails'){ctx.fillStyle='#fff3c2';ctx.beginPath();ctx.arc(VW-60,34,13,0,7);ctx.fill();
     const cols=['#f7d488','#f3a99b','#f6c08e','#e8b4c8','#bfd8a8','#f2e2b8'];
     const row=(off,base,sc,dark)=>{const wd=46*sc;for(let i=-1;i<VW/wd+2;i++){const k=Math.floor(off/wd)+i,x=k*wd-off,h=(52+((k*29)%26+26)%26)*sc;ctx.fillStyle=cols[((k%6)+6)%6];if(dark){ctx.globalAlpha=.55}
       ctx.fillRect(x,base+YOFF-h,wd-3,h+40);ctx.fillStyle='#9a6a4a';ctx.fillRect(x-2,base+YOFF-h-3,wd+1,4);
@@ -1153,11 +1228,11 @@ function drawTile(t,tx,ty,sx,sy,th,time){
   else if(t==='D'){if(gateOpen('D')){ctx.fillStyle='#8a5a32';ctx.fillRect(sx,sy,T,5);ctx.fillStyle='#c4844a';ctx.fillRect(sx+1,sy+1,T-2,3);ctx.fillStyle='#6e4a28';ctx.fillRect(sx+7,sy+1,1,3)}else{ctx.fillStyle='#f2a81d';ctx.globalAlpha=.35;for(let i=0;i<4;i++)ctx.fillRect(sx+i*4+1,sy+1,2,2);ctx.globalAlpha=1}}
   else if('1234'.includes(t)){const col={1:'#e8607f',2:'#4f8fd8',3:'#9b6bd8',4:'#f2a81d'}[t];const on=pressed[t];ctx.fillStyle='#5a4a55';ctx.fillRect(sx+1,sy+T-3,14,3);ctx.fillStyle=col;ctx.fillRect(sx+3,sy+T-(on?4:7),10,on?1:4)}
   else if(t==='K'){const on=me()&&me().cpSet.has(tx+'_'+ty);ctx.fillStyle='#6b5a4a';ctx.fillRect(sx+3,sy+1,2,15);ctx.fillStyle=on?'#5cc35a':'#c9c0c0';ctx.fillRect(sx+5,sy+1,8,6)}
-  else if(t==='F'){if(L.special)return;ctx.fillStyle='#ead6c8';ctx.fillRect(sx+3,sy-48,2,64);ctx.fillStyle='#f5c542';ctx.fillRect(sx+2,sy-51,4,4);const w=Math.sin(time*5)*1.5;ctx.fillStyle='#e8607f';ctx.fillRect(sx+5,sy-46,14+w,10);ctx.drawImage(S_HEART,sx+8,sy-45)}
+  else if(t==='F'){if(L.special||L.relax)return;ctx.fillStyle='#ead6c8';ctx.fillRect(sx+3,sy-48,2,64);ctx.fillStyle='#f5c542';ctx.fillRect(sx+2,sy-51,4,4);const w=Math.sin(time*5)*1.5;ctx.fillStyle='#e8607f';ctx.fillRect(sx+5,sy-46,14+w,10);ctx.drawImage(S_HEART,sx+8,sy-45)}
   else if(t==='M'){if(letterGot.has(lvIdx))return;const bob=Math.round(Math.sin(time*3)*2);ctx.drawImage(S_MAIL,sx+2,sy+4+bob);if(Math.floor(time*3)%2){ctx.fillStyle='#fff';ctx.fillRect(sx+13,sy+2+bob,1,1)}}
   else if(t==='R'){if(collectedSet().has(tx+'_'+ty))return;const bob=Math.round(Math.sin(time*3+tx)*2);ctx.drawImage(S_GIFTS[tx%5],sx+3,sy+5+bob);if(Math.floor(time*3+tx)%3===0){ctx.fillStyle='#fff';ctx.fillRect(sx+13,sy+4+bob,1,1)}}
   else if(t==='P'){const got=bears.some(b=>b.pkg)||(remote&&remote.pkg);if(got)return;const bob=Math.round(Math.sin(time*3)*2);ctx.drawImage(L.kind==='bday'?S_CAKE:S_PKG,sx+(L.kind==='bday'?1:2),sy+5+bob);if(Math.floor(time*3)%2){ctx.fillStyle='#fff';ctx.fillRect(sx+14,sy+3+bob,1,1);ctx.fillRect(sx+1,sy+8+bob,1,1)}}
-  else if(t==='h'||t==='c'){const bob=Math.round(Math.sin(time*4+tx)*1.5);if(t==='h'&&L.theme==='citta')ctx.drawImage(S_CHOC,sx+3,sy+6+bob);else if(t==='h'&&L.theme==='festa')ctx.drawImage(S_CUPCAKE,sx+4,sy+4+bob);else if(t==='h'&&L.theme==='halloween')ctx.drawImage(S_CANDY,sx+2,sy+6+bob);else ctx.drawImage(t==='h'?S_HONEY:S_HEART,sx+(t==='h'?3:4),sy+4+bob)}
+  else if(t==='h'||t==='c'){const bob=Math.round(Math.sin(time*4+tx)*1.5);if(t==='h'&&L.theme==='citta')ctx.drawImage(S_CHOC,sx+3,sy+6+bob);else if(t==='h'&&L.theme==='festa')ctx.drawImage(S_CUPCAKE,sx+4,sy+4+bob);else if(t==='h'&&L.theme==='nails')ctx.drawImage(S_POLISH,sx+5,sy+3+bob);else if(t==='h'&&L.theme==='mare')ctx.drawImage(S_SHELL,sx+4,sy+6+bob);else if(t==='c'&&L.theme==='mare'&&isWater(tx,ty))ctx.drawImage(S_STAR,sx+4,sy+5+bob);else if(t==='h'&&L.theme==='halloween')ctx.drawImage(S_CANDY,sx+2,sy+6+bob);else ctx.drawImage(t==='h'?S_HONEY:S_HEART,sx+(t==='h'?3:4),sy+4+bob)}
 }
 function drawCastle(cx){const x=L.castle*T-cx,y=YOFF+9*T;ctx.fillStyle='#ffc6dd';ctx.fillRect(x,y-80,190,80);ctx.fillStyle='#f39ab8';for(let i=0;i<5;i++){ctx.fillRect(x+i*40,y-112,30,112);ctx.fillStyle='#ffe08a';ctx.beginPath();ctx.moveTo(x+i*40-3,y-112);ctx.lineTo(x+i*40+15,y-136);ctx.lineTo(x+i*40+33,y-112);ctx.fill();ctx.fillStyle='#f39ab8'}
   ctx.fillStyle='#fff';for(let i=0;i<9;i++){ctx.fillRect(x+6+i*20,y-70,8,4)}ctx.fillStyle='#e8607f';ctx.beginPath();ctx.arc(x+95,y-26,18,Math.PI,0);ctx.fill();ctx.fillRect(x+77,y-26,36,26);
@@ -1177,8 +1252,9 @@ function drawBear(b,cx,time,isRemote){
   ctx.save();if(b.face<0){ctx.translate(x+w,y);ctx.scale(-1,1);ctx.drawImage(fr,0,0,w,h)}else ctx.drawImage(fr,x,y,w,h);ctx.restore();
   const bx=Math.round(x+4.5),by=Math.round(y+6.5),bw=14;
   if(L&&L.kind==='bday'&&b.c==='lapapa'){ctx.fillStyle='#9b6bd8';ctx.beginPath();ctx.moveTo(bx+3,by+1);ctx.lineTo(bx+7,by-9);ctx.lineTo(bx+11,by+1);ctx.fill();ctx.fillStyle='#f5c542';ctx.fillRect(bx+4,by-2,6,1);ctx.fillRect(bx+6,by-11,2,2)}
-  else if(L&&L.special&&b.c==='lapapa'&&!b.goal){ctx.fillStyle='#b98cff';ctx.fillRect(bx-1,by+7,bw+2,8);ctx.fillStyle='#9a6ad8';for(let i=0;i<4;i++)ctx.fillRect(bx+i*4,by+7,1,8);ctx.fillStyle='#fde0ea';ctx.fillRect(bx-1,by+7,bw+2,1)}
-  if(L&&L.special&&b.c==='atata'&&b.pkg){if(L.kind==='bday')ctx.drawImage(S_CAKE,bx+(b.face>0?-7:bw-4),by+3,10,7);else ctx.drawImage(S_PKG,bx+(b.face>0?-6:bw-4),by+2,8,7)}
+  else if(L&&L.kind==='pads'&&b.c==='lapapa'&&!b.goal){ctx.fillStyle='#b98cff';ctx.fillRect(bx-1,by+7,bw+2,8);ctx.fillStyle='#9a6ad8';for(let i=0;i<4;i++)ctx.fillRect(bx+i*4,by+7,1,8);ctx.fillStyle='#fde0ea';ctx.fillRect(bx-1,by+7,bw+2,1)}
+  if(b.c==='lapapa'&&b.nails&&NAIL_COLS[b.nails.c]){ctx.fillStyle=NAIL_COLS[b.nails.c][1];ctx.fillRect(bx-1,by+10,2,2);ctx.fillRect(bx+bw-1,by+10,2,2)}
+  if(L&&L.special&&b.c===RUN()&&b.pkg){if(L.kind==='bday')ctx.drawImage(S_CAKE,bx+(b.face>0?-7:bw-4),by+3,10,7);else ctx.drawImage(S_PKG,bx+(b.face>0?-6:bw-4),by+2,8,7)}
   if(b.gl){const f=Math.floor(time*10)%2;ctx.fillStyle='#f5c542';ctx.fillRect(bx-4,by+6-f,5,3);ctx.fillRect(bx+bw-1,by+6-f,5,3);ctx.fillStyle='#d99a1a';ctx.fillRect(bx-4,by+9-f,5,1);ctx.fillRect(bx+bw-1,by+9-f,5,1)}
   if(b.dash>0){ctx.fillStyle='rgba(255,255,255,.7)';for(let i=0;i<3;i++)ctx.fillRect(bx+(b.face>0?-6-i*5:bw+2+i*5),by+4+i*3,4,1)}
 }
@@ -1191,6 +1267,17 @@ function render(time){
     ctx.fillStyle='#ffffff';ctx.fillRect(x+6,y-80,100,13);ctx.fillStyle='#3a9a5a';ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.fillText('FARMACIA',x+56,y-70);
     const on=Math.floor(time*2)%2;ctx.fillStyle=on?'#3ad06a':'#2a8a4a';ctx.fillRect(x+51,y-62,10,26);ctx.fillRect(x+43,y-54,26,10);
     ctx.fillStyle='#a8d8e8';ctx.fillRect(x+8,y-30,24,30);ctx.fillRect(x+80,y-30,24,30);ctx.fillStyle='#6a8aa8';ctx.fillRect(x+44,y-32,24,32)}
+  if(L.umbrella){const x=L.umbrella*T-cam,y=YOFF+6*T;ctx.fillStyle='#e8475f';ctx.fillRect(x+6,y-6,22,6);ctx.fillStyle='#f6f2ea';for(let i=0;i<4;i++)ctx.fillRect(x+6+i*6,y-6,3,6);
+    ctx.fillStyle='#38c8f0';ctx.fillRect(x+40,y-6,22,6);ctx.fillStyle='#ffffff';for(let i=0;i<4;i++)ctx.fillRect(x+40+i*6,y-6,3,6);
+    ctx.fillStyle='#8a6534';ctx.fillRect(x+34,y-62,2,62);const cols=['#e8475f','#ffffff','#f5c542','#ffffff','#38c8f0','#ffffff'];
+    for(let i=0;i<6;i++){ctx.fillStyle=cols[i];ctx.beginPath();ctx.moveTo(x+35,y-64);ctx.lineTo(x+35-34+i*11.3,y-46);ctx.lineTo(x+35-34+(i+1)*11.3,y-46);ctx.fill()}
+    ctx.fillStyle='#6ab8e8';ctx.fillRect(x+66,y-10,12,10);ctx.fillStyle='#ffffff';ctx.fillRect(x+66,y-10,12,2)}
+  if(L.salon){const x=L.salon*T-cam,y=YOFF+9*T;ctx.fillStyle='#f6eaff';ctx.fillRect(x,y-86,112,86);for(let i=0;i<14;i++){ctx.fillStyle=i%2?'#ffffff':'#b98cff';ctx.fillRect(x+i*8,y-92,8,10)}
+    ctx.fillStyle='#ffffff';ctx.fillRect(x+6,y-78,100,13);ctx.fillStyle='#8a6ad8';ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.fillText('NAIL BAR ✿',x+56,y-68);
+    ctx.drawImage(S_POLISH,x+46,y-60,10,15);ctx.drawImage(S_POLISH,x+58,y-60,10,15);ctx.fillStyle='#ffd6e8';ctx.fillRect(x+8,y-30,24,30);ctx.fillRect(x+80,y-30,24,30);ctx.fillStyle='#b98cff';ctx.fillRect(x+44,y-32,24,32);
+    ctx.fillStyle='#f39ab8';ctx.fillRect(x+14,y-22,12,4);ctx.fillRect(x+86,y-22,12,4)}
+  if(L.house2!==undefined){const x=L.house2*T-cam,y=YOFF+9*T;ctx.fillStyle='#bcd8f2';ctx.fillRect(x,y-80,120,80);ctx.fillStyle='#4f8fd8';ctx.beginPath();ctx.moveTo(x-8,y-80);ctx.lineTo(x+60,y-112);ctx.lineTo(x+128,y-80);ctx.fill();
+    ctx.fillStyle='#fff7ef';ctx.fillRect(x+16,y-62,24,20);ctx.fillRect(x+80,y-62,24,20);ctx.fillStyle='#6e3d1f';ctx.fillRect(x+48,y-36,24,36);ctx.fillStyle='#f5c542';ctx.fillRect(x+66,y-18,3,3)}
   if(L.bakery){const x=L.bakery*T-cam,y=YOFF+9*T;ctx.fillStyle='#fff1e6';ctx.fillRect(x,y-86,112,86);
     for(let i=0;i<14;i++){ctx.fillStyle=i%2?'#ffffff':'#f39ab8';ctx.fillRect(x+i*8,y-92,8,10)}
     ctx.fillStyle='#ffffff';ctx.fillRect(x+6,y-78,100,13);ctx.fillStyle='#c96a8a';ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.fillText('PASTICCERIA',x+56,y-68);
@@ -1206,7 +1293,7 @@ function render(time){
     ctx.fillStyle='#ff4d6d';ctx.fillRect(x+10,y-30,10,20);ctx.fillRect(x+46,y-30,10,20);ctx.fillStyle='#38e1ff';ctx.beginPath();ctx.arc(x+33,y-66,7,0,7);ctx.fill();ctx.drawImage(S_HEART,x+30,y-48);
     ctx.fillStyle=Math.floor(time*8)%2?'#ffd84a':'#ff8a3d';ctx.fillRect(x+26,y-10,14,6+Math.floor(time*8)%2*3)}
   const tx0=Math.floor(cam/T)-1,tx1=tx0+Math.ceil(VW/T)+2;const col=collectedSet();
-  for(let ty=0;ty<ROWS;ty++)for(let tx=tx0;tx<=tx1;tx++){const t=tileAt(tx,ty);if(t==='.'||(tx<0||tx>=L.w))continue;if((t==='h'||t==='c')&&col.has(tx+'_'+ty))continue;drawTile(t,tx,ty,tx*T-cam,ty*T+YOFF,th,time)}
+  for(let ty=0;ty<ROWS;ty++)for(let tx=tx0;tx<=tx1;tx++){const t=tileAt(tx,ty);if(t==='.'||t==='W'||(tx<0||tx>=L.w))continue;if((t==='h'||t==='c')&&col.has(tx+'_'+ty))continue;drawTile(t,tx,ty,tx*T-cam,ty*T+YOFF,th,time)}
   if(L.ships)for(const sh of L.ships){const x=Math.round(sh.cx-cam),y=Math.round(sh.y+YOFF);if(x<-60||x>VW+10)continue;
     ctx.fillStyle='#7a88a8';ctx.fillRect(x+2,y+2,sh.w-4,8);ctx.fillStyle='#c8d2e8';ctx.fillRect(x,y,sh.w,4);ctx.fillStyle='#e9eef9';ctx.fillRect(x+2,y,sh.w-4,1);
     for(let i=0;i<sh.w/8;i++){ctx.fillStyle=(Math.floor(time*4)+i)%2?'#38e1ff':'#ff6ad5';ctx.fillRect(x+4+i*8,y+5,3,2)}
@@ -1215,12 +1302,16 @@ function render(time){
   for(const e of L.ents){if(sq.has(e.id))continue;const p=entPos(e,Date.now()/1000);const sx=Math.round(p.x-cam),sy=Math.round(p.y+YOFF);if(sx<-20||sx>VW+20)continue;const spr={pigeon:S_PIGEON,dog:S_DOG,bee:S_BEE,hog:S_HOG,ghost:S_GHOST,pump:S_PUMP,peng:S_PENG,owl:S_OWL,robot:S_ROBOT,drone:S_DRONE}[e.t];if(e.t==='ghost')ctx.globalAlpha=.75+Math.sin(Date.now()/200+e.ph)*.15;
     ctx.save();if(p.dir<0){ctx.translate(sx-1+spr.width,sy-1);ctx.scale(-1,1);ctx.drawImage(spr,0,0)}else ctx.drawImage(spr,sx-1,sy-1);ctx.restore();ctx.globalAlpha=1}
   if(photoMode){const pair=solo?bears.slice(0,2):[bears[0],remote||{c:other(myChar)}];pair.sort((a,b)=>a.c==='atata'?-1:1);
-    const gy=8*T+2;pair.forEach((b,i)=>{if(!b)return;drawBear({c:b.c,out:b.out||outfitOf(b.c),x:photoMode.fx-34+i*16,y:gy,face:i?-1:1,on:true,vx:0,anim:0,goal:false,inv:0,ko:0},cam,0,true)});
+    const gy=photoMode.fy*T+2;pair.forEach((b,i)=>{if(!b)return;drawBear({c:b.c,out:b.out||outfitOf(b.c),x:photoMode.fx-34+i*16,y:gy,face:i?-1:1,on:true,vx:0,anim:0,goal:false,inv:0,ko:0},cam,0,true)});
     ctx.drawImage(S_HEART,Math.round(photoMode.fx-18-cam),Math.round(gy+YOFF-16));}
   else{if(remote&&remote.vis)drawBear(remote,cam,time,true);
   bears.forEach((b,i)=>{if(i!==active)drawBear(b,cam,time,false)});drawBear(me(),cam,time,false);}
+  if(L.wat){for(let ty=0;ty<ROWS;ty++)for(let tx=tx0;tx<=tx1;tx++){if(!isWater(tx,ty))continue;const sx=tx*T-cam,sy=ty*T+YOFF;ctx.fillStyle='rgba(40,150,220,.45)';ctx.fillRect(sx,sy,T,T);
+      if(!isWater(tx,ty-1)){const w=Math.sin(time*3+tx)*1.5;ctx.fillStyle='rgba(255,255,255,.75)';ctx.fillRect(sx,sy+w,T,2);ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillRect(sx+3,sy+5+w,6,1)}}}
   for(const p of particles){ctx.fillStyle=p.col;ctx.globalAlpha=Math.max(0,Math.min(1,p.l*2));ctx.fillRect(Math.round(p.x-cam),Math.round(p.y+YOFF),2,2)}ctx.globalAlpha=1;
   if(remote&&remote.vis)drawArrowTo(remote,cam);if(solo)bears.forEach((b,i)=>{if(i!==active)drawArrowTo(b,cam)});
+  if(L.relax&&sunsetT){const k=Math.min(1,(performance.now()-sunsetT)/4000);ctx.fillStyle='rgba(255,120,60,'+(k*.28)+')';ctx.fillRect(0,0,VW,VH);ctx.fillStyle='rgba(120,40,120,'+(k*.12)+')';ctx.fillRect(0,0,VW,VH*.5);
+    ctx.fillStyle='rgba(255,210,120,'+(.5+k*.5)+')';ctx.beginPath();ctx.arc(VW*.75,30+k*60,14,0,7);ctx.fill()}
   ctx.restore();
 }
 
@@ -1249,16 +1340,19 @@ function update(dt){
   else if(remote&&remote.vis&&remote.ko&&!(me().ko>0)&&reviveCd<=0&&canRescue(me(),remote)){reviveCd=1.5;me().inv=Math.max(me().inv,1.5);myEmo={id:++emoN,k:'revive',ts:Date.now()};sendPresence(true);floatAt(me(),'💋',2);toast('Bacino! ♥',1.2)}
   // abbraccio (lato partner)
   if(!solo&&!hugDone&&remote&&remote.vis&&remote.abT&&Math.abs((remote.abT||0)-abT)<700&&Date.now()-abT<1500&&nearOther(me()))doHug(me(),remote);
-  if(L.special&&ambT<=0&&!me().goal&&(me().c==='lapapa'||Math.abs(me().vx)>20)){if(sayPair(me(),'amb'))ambT=25+Math.random()*15;else ambT=3}
+  if(L.special&&solo&&bears[1]&&!bears[0].goal){npcT-=dt;if(npcT<=0){if(sayPair(bears[1],'amb'))npcT=35+Math.random()*20;else npcT=4}}
+  if(L.special&&ambT<=0&&!me().goal&&(me().c!==RUN()||Math.abs(me().vx)>20)){if(sayPair(me(),'amb'))ambT=25+Math.random()*15;else ambT=3}
   else if(ambT<=0&&!me().goal&&Math.abs(me().vx)>20){if(Math.random()<.4?sayPair(me(),'amb',BABY):sayPair(me(),'amb'))ambT=50+Math.random()*35;else ambT=3}
   if(!me().npc)for(const h of L.hints){if(!hintsShown.has(h.x)&&me().x>h.x&&me().x<h.x+64){hintsShown.add(h.x);toast(h.text,4.5)}}
   for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.l-=dt}particles=particles.filter(p=>p.l>0);
-  const camB=(L.special&&!solo&&myChar!=='atata'&&remote&&remote.vis)?remote:me();
+  const camB=(L.special&&!solo&&myChar!==RUN()&&remote&&remote.vis)?remote:me();
   const target=Math.max(0,Math.min(L.w*T-VW,camB.x+6-VW/2));cam+=(target-cam)*Math.min(1,dt*6);
   // traguardo
-  const allGoal=L.special?(solo?bears[0].goal:(myChar==='atata'?bears[0].goal:!!(remote&&remote.vis&&remote.goal))):solo?bears.every(b=>b.goal):(bears[0].goal&&remote&&remote.vis&&remote.goal);
-  if(L.special&&!solo&&myChar!=='atata'&&remote&&remote.goal&&!L.doneT)L.doneT=performance.now();
-  if(allGoal&&!resShown){setTimeout(()=>{if(mode==='play'||mode==='pause')showResults()},900);resShown=true}
+  const nailsOk=L.kind!=='nails'||!!(solo||myChar===RUN()?bears[0].nails:(remote&&remote.nails));
+  const allGoal=L.special?(nailsOk&&(solo?bears[0].goal:(myChar===RUN()?bears[0].goal:!!(remote&&remote.vis&&remote.goal)))):solo?bears.every(b=>b.goal):(bears[0].goal&&remote&&remote.vis&&remote.goal);
+  if(L.special&&!solo&&myChar!==RUN()&&remote&&remote.goal&&!L.doneT)L.doneT=performance.now();
+  if(allGoal&&!resShown&&L.relax){resShown=true;startSunset()}
+  else if(allGoal&&!resShown){setTimeout(()=>{if(mode==='play'||mode==='pause')showResults()},900);resShown=true}
 }
 function frame(now){
   let dt=(now-last)/1000;last=now;if(dt>.1)dt=.1;
@@ -1350,7 +1444,7 @@ window.__game={sprites,parseOut,get bears(){return bears},get L(){return L},star
 })();
 </script>
 <script>
-(function(){var BUILD='1794296877';
+(function(){var BUILD='1794755011';
   function check(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){
     if(!j||!j.v||j.v===BUILD)return;var k='al_reloaded_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}
     location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
