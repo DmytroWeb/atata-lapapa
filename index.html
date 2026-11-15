@@ -88,19 +88,21 @@ table.sc th{font-weight:600}
 .paw .nl{position:absolute;width:22px;height:30px;border-radius:11px 11px 8px 8px;background:#f39ab8;border:2px solid #fff;overflow:hidden;display:flex;align-items:flex-start;justify-content:center;color:#fff;font-size:11px;line-height:16px}
 .paw .n1{left:14px;top:22px;transform:rotate(-22deg)}.paw .n2{left:44px;top:4px;transform:rotate(-8deg)}.paw .n3{left:74px;top:-2px}.paw .n4{left:104px;top:4px;transform:rotate(8deg)}.paw .n5{left:134px;top:22px;transform:rotate(22deg)}
 .nl.french{background-image:linear-gradient(to bottom,#fff 0 30%,transparent 30%)}.nl.glitter{background-image:radial-gradient(#fff 1px,transparent 1.5px),radial-gradient(#ffe08a 1px,transparent 1.5px);background-size:6px 6px,7px 7px;background-position:0 0,3px 3px}
-#mapScroll{position:absolute;inset:0;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;-webkit-overflow-scrolling:touch}
+#mapScroll{position:absolute;inset:0;overflow:auto;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch;cursor:grab}
+#mapScroll.drag{cursor:grabbing}
+#mapTop .mz{display:flex;gap:6px}
 #mapInner{position:relative;height:100%}
 #mapBg{position:absolute;left:0;top:0;image-rendering:pixelated}
-.mnode{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:0;cursor:pointer;font:600 12px 'Fredoka',sans-serif;color:#3a2330}
+.mnode{position:absolute;transform:translate(-50%,-50%) scale(var(--nz,1));display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:0;cursor:pointer;font:600 12px 'Fredoka',sans-serif;color:#3a2330}
 .mnode .num{width:34px;height:34px;border-radius:50%;background:#fff7ef;border:3px solid #e8607f;display:flex;align-items:center;justify-content:center;font:13px 'Press Start 2P',monospace;color:#e8607f;box-shadow:0 3px 0 #b8405c}
 .mnode.sp .num{border-color:#f39ab8;color:#c96a8a;font-size:15px;font-family:'Fredoka',sans-serif}
-.mnode canvas{width:64px;height:40px;image-rendering:pixelated;border:2px solid #fff;border-radius:6px;box-shadow:0 2px 0 #0003;background:#fff}
+.mnode canvas{width:80px;height:50px;image-rendering:pixelated;border:2px solid #fff;border-radius:6px;box-shadow:0 2px 0 #0003;background:#fff}
 .mnode .lb{background:#fff7efd9;border-radius:6px;padding:0 5px;font-size:11px;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}
 .mnode.done .num::after{content:'✓';position:absolute;margin:-26px 0 0 30px;background:#5cc35a;color:#fff;border-radius:50%;width:16px;height:16px;font:11px 'Fredoka';display:flex;align-items:center;justify-content:center}
 .mnode.locked{filter:grayscale(1) brightness(.85);opacity:.8}
 .mnode.locked .num{font-size:15px}
 .mnode.sel .num{background:#ffe9f0;transform:scale(1.15)}
-.mbear{position:absolute;width:40px;height:40px;image-rendering:pixelated;transition:left .7s ease,top .7s ease;pointer-events:none}
+.mbear{position:absolute;width:calc(46px*var(--nz,1));height:calc(46px*var(--nz,1));image-rendering:pixelated;transition:left .7s ease,top .7s ease;pointer-events:none}
 #mapTop{position:absolute;top:8px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
 #mapTop span{background:#fff7efe6;border-radius:12px;padding:6px 12px;font:12px 'Press Start 2P',monospace;color:#9b5b32;box-shadow:0 3px 0 #0002}
 #mapTop button{pointer-events:auto;font:18px 'Fredoka';background:#fff7ef;border:0;border-radius:12px;width:40px;height:36px;box-shadow:0 3px 0 #0002;cursor:pointer}
@@ -199,7 +201,7 @@ table.sc th{font-weight:600}
 
   <div class="screen" id="sMap" style="padding:0;background:#5fb4e6">
     <div id="mapScroll"><div id="mapInner"><canvas id="mapBg"></canvas><div id="mapNodes"></div><canvas class="mbear" id="mbA" width="46" height="46"></canvas><canvas class="mbear" id="mbL" width="46" height="46"></canvas></div></div>
-    <div id="mapTop"><span>🗺️ Mappa dei livelli</span><button id="bMapBack" aria-label="Indietro">✕</button></div>
+    <div id="mapTop"><span>🗺️ Mappa dei livelli</span><div class="mz"><button id="bZoomOut" aria-label="Rimpicciolisci">−</button><button id="bZoomIn" aria-label="Ingrandisci">＋</button><button id="bMapBack" aria-label="Indietro">✕</button></div></div>
     <div id="mapInfo"><canvas id="mapThumbBig" width="64" height="40"></canvas><div style="flex:1;min-width:0"><div id="mapName"></div><div id="mapStat" class="small"></div></div><button class="btn" id="bMapPlay">Gioca ▶</button></div>
   </div>
 
@@ -1022,10 +1024,18 @@ function drawMapBg(){const c=$('mapBg');c.width=MAP_W;c.height=MAP_H;const x=c.g
   const path=(ids)=>{x.strokeStyle='#fff7ef';x.lineWidth=5;x.setLineDash([7,7]);x.beginPath();ids.forEach((id,k)=>{const [px,py]=MAP_POS[id];k?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();x.setLineDash([])};
   path(MAIN_PATH);path(SPEC_PATH);if(store.get('secret'))path([7,8]);
   x.strokeStyle='#ffffff';x.lineWidth=3;x.setLineDash([3,6]);x.beginPath();x.moveTo(1040,215);x.quadraticCurveTo(1130,160,1225,120);x.stroke();x.setLineDash([])}
-function layoutMap(){const sc=$('mapScroll');mapScale=Math.max(.5,(sc.clientHeight-76)/MAP_H);const inner=$('mapInner');inner.style.width=(MAP_W*mapScale)+'px';
+let mapZoom=+(store.get('mapZoom')||1.3);
+function mapBase(){const sc=$('mapScroll');return Math.max(.45,(sc.clientHeight-76)/MAP_H)}
+function layoutMap(fx,fy){const sc=$('mapScroll');
+  // punto da tenere fermo durante lo zoom (in coordinate della mappa)
+  if(fx===undefined){fx=(sc.scrollLeft+sc.clientWidth/2)/(mapScale||1);fy=(sc.scrollTop+sc.clientHeight/2)/(mapScale||1)}
+  const ox=fx*(mapScale||1)-sc.scrollLeft,oy=fy*(mapScale||1)-sc.scrollTop;
+  mapScale=mapBase()*mapZoom;const inner=$('mapInner');inner.style.width=(MAP_W*mapScale)+'px';inner.style.height=(MAP_H*mapScale+76)+'px';
   $('mapBg').style.width=(MAP_W*mapScale)+'px';$('mapBg').style.height=(MAP_H*mapScale)+'px';
+  inner.style.setProperty('--nz',Math.max(.85,Math.min(1.7,Math.sqrt(mapZoom))));
+  sc.scrollLeft=fx*mapScale-ox;sc.scrollTop=fy*mapScale-oy;
   for(const el of document.querySelectorAll('.mnode')){const [px,py]=MAP_POS[el.dataset.i];el.style.left=(px*mapScale)+'px';el.style.top=(py*mapScale)+'px'}placeMapBears(false)}
-function placeMapBears(anim){const [px,py]=MAP_POS[mapSel];for(const [id,dx] of [['mbA',-34],['mbL',34]]){const el=$(id);if(!anim)el.style.transition='none';el.style.left=(px*mapScale+dx-20)+'px';el.style.top=(py*mapScale-18)+'px';if(!anim){void el.offsetWidth;el.style.transition=''}}}
+function placeMapBears(anim){const [px,py]=MAP_POS[mapSel];const k=Math.max(.85,Math.min(1.7,Math.sqrt(mapZoom)));for(const [id,dx] of [['mbA',-40],['mbL',40]]){const el=$(id);if(!anim)el.style.transition='none';el.style.left=(px*mapScale+dx*k-23*k)+'px';el.style.top=(py*mapScale-26*k)+'px';if(!anim){void el.offsetWidth;el.style.transition=''}}}
 function buildMapNodes(){const box=$('mapNodes');box.innerHTML='';const d=doneSet();
   LEVELS.forEach((lv,i)=>{if(!MAP_POS[i]||!mapVisible(i))return;const el=document.createElement('button');el.className='mnode'+(lv.special||lv.relax?' sp':'')+(d.has(i)?' done':'')+(isUnlocked(i)?'':' locked')+(i===mapSel?' sel':'');el.dataset.i=i;
     const num=document.createElement('div');num.className='num';num.textContent=isUnlocked(i)?(lv.chip?lv.chip.split(' ')[0]:i===SECRET?'🎃':String(i+1)):'🔒';
@@ -1039,10 +1049,23 @@ function updateMapInfo(){const lv=LEVELS[mapSel];$('mapName').textContent=(lv.sp
 function openMap(ctx){mapCtx=ctx;mapSel=ctx==='pause'?lvIdx:(ctx==='host'?chosenLevel():selLv);if(!LEVELS[mapSel]||!isUnlocked(mapSel))mapSel=0;
   showScreen('sMap');$('sMap').style.display='block';drawMapBg();buildMapNodes();updateMapInfo();
   for(const [id,c] of [['mbA','atata'],['mbL','lapapa']]){const cv=$(id),x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.clearRect(0,0,46,46);x.save();if(c==='lapapa'){x.translate(46,0);x.scale(-1,1)}x.drawImage(sprites(c,outfitOf(c)).stand,0,0);x.restore()}
-  requestAnimationFrame(()=>{layoutMap();const [px]=MAP_POS[mapSel];$('mapScroll').scrollLeft=px*mapScale-$('mapScroll').clientWidth/2})}
+  requestAnimationFrame(()=>{const [px,py]=MAP_POS[mapSel];const sc=$('mapScroll');mapScale=mapBase()*mapZoom;layoutMap(px,py);sc.scrollLeft=px*mapScale-sc.clientWidth/2;sc.scrollTop=py*mapScale-(sc.clientHeight-76)/2})}
 function closeMap(){if(mapCtx==='host'){showScreen('sWait');refreshWait()}else if(mapCtx==='pause'){showScreen('sPause')}else{showScreen('sMenu');refreshMenu()}}
 addEventListener('resize',()=>{if($('sMap').style.display==='block')layoutMap()});
 $('bMapBack').onclick=()=>{audioInit();closeMap()};
+function setMapZoom(z,cx,cy){z=Math.max(.7,Math.min(3,z));if(Math.abs(z-mapZoom)<.001)return;const sc=$('mapScroll'),r=sc.getBoundingClientRect();
+  if(cx===undefined){cx=r.left+sc.clientWidth/2;cy=r.top+(sc.clientHeight-76)/2}
+  const fx=(sc.scrollLeft+cx-r.left)/mapScale,fy=(sc.scrollTop+cy-r.top)/mapScale;const ox=cx-r.left,oy=cy-r.top;
+  mapZoom=z;mapScale=mapBase()*mapZoom;layoutMap(fx,fy);sc.scrollLeft=fx*mapScale-ox;sc.scrollTop=fy*mapScale-oy;store.set('mapZoom',Math.round(z*100)/100)}
+$('bZoomIn').onclick=()=>setMapZoom(mapZoom*1.25);$('bZoomOut').onclick=()=>setMapZoom(mapZoom/1.25);
+{const sc=$('mapScroll');let pinch=null;
+  sc.addEventListener('touchstart',e=>{if(e.touches.length===2){const [a,b]=e.touches;pinch={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),z:mapZoom}}},{passive:true});
+  sc.addEventListener('touchmove',e=>{if(pinch&&e.touches.length===2){e.preventDefault();const [a,b]=e.touches;const d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);setMapZoom(pinch.z*d/pinch.d,(a.clientX+b.clientX)/2,(a.clientY+b.clientY)/2)}},{passive:false});
+  sc.addEventListener('touchend',e=>{if(e.touches.length<2)pinch=null},{passive:true});
+  sc.addEventListener('wheel',e=>{e.preventDefault();setMapZoom(mapZoom*(e.deltaY<0?1.12:1/1.12),e.clientX,e.clientY)},{passive:false});
+  let drag=null;sc.addEventListener('mousedown',e=>{if(e.target.closest('.mnode'))return;drag={x:e.clientX,y:e.clientY,l:sc.scrollLeft,t:sc.scrollTop};sc.classList.add('drag')});
+  addEventListener('mousemove',e=>{if(!drag)return;sc.scrollLeft=drag.l-(e.clientX-drag.x);sc.scrollTop=drag.t-(e.clientY-drag.y)});
+  addEventListener('mouseup',()=>{drag=null;sc.classList.remove('drag')})}
 $('bMapPlay').onclick=()=>{audioInit();const i=mapSel;if(!isUnlocked(i))return;setSel(i);
   if(mapCtx==='host'){ready=false;showScreen('sWait');refreshWait();sendPresence(true);return}
   if(mapCtx==='pause'){if(!solo){jumpMsg={id:Date.now(),lv:i}}startLevel(i);if(!solo)sendPresence(true);toast('Livello: '+LEVELS[i].name+(solo?'':' — anche per l’altro orsetto'),2.5);return}
@@ -1552,7 +1575,7 @@ window.__game={sprites,parseOut,get bears(){return bears},get L(){return L},star
 })();
 </script>
 <script>
-(function(){var BUILD='1794775398';
+(function(){var BUILD='1794776429';
   function check(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){
     if(!j||!j.v||j.v===BUILD)return;var k='al_reloaded_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}
     location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
