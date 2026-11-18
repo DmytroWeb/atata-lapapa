@@ -33,6 +33,14 @@ canvas#c{image-rendering:pixelated;image-rendering:crisp-edges;display:block;bac
 .tb{position:absolute;bottom:16px;width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.28);border:3px solid rgba(255,255,255,.55);color:#fff;font-size:30px;display:flex;align-items:center;justify-content:center;pointer-events:auto;text-shadow:1px 1px 0 #3a2330;font-family:'Press Start 2P',monospace}
 .tb.on{background:rgba(255,255,255,.55)}
 #bL{left:16px}#bR{left:104px}
+#touch.drive .tb{font-family:Fredoka,system-ui,sans-serif;font-size:13px;line-height:1.15;text-align:center;flex-direction:column;font-weight:700;letter-spacing:.5px}
+#touch.drive .tb small{font-size:10px;font-weight:600;opacity:.9}
+#touch.drive #bL{left:14px;bottom:14px;width:100px;height:112px;border-radius:20px;background:rgba(232,71,95,.38);font-size:15px}
+#touch.drive #bR{left:auto;right:14px;bottom:14px;width:100px;height:126px;border-radius:20px;background:rgba(92,200,120,.4);font-size:15px}
+#touch.drive #bT{display:flex;right:128px;bottom:14px;width:66px;height:66px;border-radius:16px;font-size:24px;background:rgba(60,80,140,.45)}
+#touch.drive #bA{right:128px;bottom:90px;width:66px;height:50px;border-radius:14px;font-size:12px}
+#touch.drive #bJ{left:126px;right:auto;bottom:14px;width:60px;height:60px;font-size:22px}
+#touch.drive-i #bA{right:14px;bottom:14px;width:116px;height:116px;border-radius:22px;font-size:16px;background:rgba(232,71,95,.4);font-family:Fredoka,system-ui,sans-serif;flex-direction:column;font-weight:700}
 #bJ{right:20px;width:92px;height:92px;font-size:12px}
 #bS{right:30px;bottom:124px;width:58px;height:58px;font-size:18px;display:none}
 #bT{right:214px;bottom:20px;width:68px;height:68px;font-size:26px;display:none}
@@ -532,7 +540,7 @@ const keys={left:false,right:false,jump:false,swap:false,ab:false,th:false};
 const kb={},tk={};
 function mergeKeys(){for(const k in keys)keys[k]=!!(kb[k]||tk[k])}
 function resetInput(){for(const k in kb)kb[k]=false;for(const k in tk)tk[k]=false;mergeKeys();document.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'))}
-const KM={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'jump',KeyW:'jump',ArrowUp:'jump',Tab:'swap',KeyE:'swap',KeyK:'ab',ShiftLeft:'ab',ShiftRight:'ab',ArrowDown:'ab',KeyS:'ab',KeyF:'th',KeyJ:'th',KeyX:'th'};
+const KM={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'jump',KeyW:'jump',ArrowUp:'jump',Tab:'swap',KeyE:'swap',KeyK:'ab',ShiftLeft:'ab',ShiftRight:'ab',ArrowDown:'ab',KeyS:'ab',KeyF:'th',KeyJ:'th',KeyX:'th',KeyR:'th'};
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||mode!=='play')return;const k=KM[e.code];if(k){kb[k]=true;mergeKeys();e.preventDefault()}if(e.code==='Escape'||e.code==='KeyP')togglePause();if(e.code==='Digit1')sendEmote('heart');if(e.code==='Digit2')sendEmote('kiss');if(e.code==='Digit3')sendEmote('hug')});
 addEventListener('keyup',e=>{const k=KM[e.code];if(k){kb[k]=false;mergeKeys();e.preventDefault()}});
 addEventListener('blur',resetInput);
@@ -615,7 +623,7 @@ function startLevel(i){
   else if(solo){bears=[newBear('atata',L.spawn),newBear('lapapa',L.spawn+1)];active=bears.findIndex(b=>b.c===myChar)}
   else{bears=[newBear(myChar,myChar==='atata'?L.spawn:L.spawn+1)];active=0}
   cam=0;mode='play';playing=true;showScreen(null);$('hud').style.display='flex';
-  $('touch').style.display=isTouch?'block':'none';for(const id of ['bL','bR','bJ','bA'])$(id).style.display='';$('bL').innerHTML='◀';$('bR').innerHTML='▶';$('bJ').innerHTML='SALTA';$('bS').style.display=(solo&&!L.special)?'flex':'none';$('bT').style.display=L.xmas?'flex':'none';setAbLabel();
+  $('touch').style.display=isTouch?'block':'none';$('touch').classList.remove('drive','drive-i');for(const id of ['bL','bR','bJ','bA'])$(id).style.display='';$('bL').innerHTML='◀';$('bR').innerHTML='▶';$('bJ').innerHTML='SALTA';$('bS').style.display=(solo&&!L.special)?'flex':'none';$('bT').style.display=L.xmas?'flex':'none';setAbLabel();
   if(!solo)store.set('session',{code,char:myChar,lv:i,totals});
   if(L.special&&L.kind!=='drive'&&!solo&&myChar!==RUN()){$('touch').style.display='none';setTimeout(()=>toast(RUN()==='atata'?'In questa missione corre Atata per te! Tu aspetti a casa: fai il tifo con ♥ 💋 🤗':'Questo è il Lapapa time: lei va a farsi le unghiette! Tu le scrivi da casa, mandale ♥ 💋 🤗',5),300)}
   updateHud();
@@ -1536,7 +1544,7 @@ function drawXmasFinale(time){const k=Math.min(1,(performance.now()-xmasT)/900);
   for(const p of particles){ctx.fillStyle=p.col;ctx.globalAlpha=Math.max(0,Math.min(1,p.l*2));ctx.fillRect(Math.round(p.x-cam),Math.round(p.y+YOFF),2,2)}ctx.globalAlpha=1;
   if(k<1){ctx.fillStyle='rgba(20,10,20,'+(1-k)+')';ctx.fillRect(0,0,VW,VH)}}
 // ================= LIVELLO PATENTE =================
-const DRV_LEN=4300,DRV_P={z30:[540,1160],light1:1460,ped:1960,stop:2460,bumps:[2790,2940],light2:3260,parkSign:3470,spot:[3660,3714],barrier:4040};
+const DRV_LEN=4300,DRV_P={z30:[540,1160],light1:1460,ped:1960,stop:2460,bumps:[2790,2940],light2:3260,parkSign:3470,spot:[3640,3720],barrier:4040};
 const DRV_ERR={z30:'Zona scuola oltre i 30 km/h',fast:'Velocità oltre i 50 km/h',red:'Passaggio col semaforo rosso',ped:'Precedenza al pedone non data',stop:'Allo STOP non si è fermata',bump:'Dosso preso troppo veloce',ind:'Freccia dimenticata al parcheggio',barrier:'Urto contro la sbarra'};
 // [frase istruttore Atata, risposta Lapapa, (1 = parla prima Lapapa)]
 const DRV_L={
@@ -1557,8 +1565,8 @@ const DRV_L={
  stopfail:[['Allo STOP bisogna fermarsi del tutto!','Ma ho rallentato tantissimo… 🥺']],
  bump:[['Dossi in arrivo: sotto i 25, sennò saltiamo','Piano piano…']],
  bumpfail:[['Ahia, la mia testa! Troppo veloce sul dosso 😵','Ops! Tutto bene amore? 🙈']],
- park:[['Ultima prova: parcheggio! Metti la freccia ★ e fermati nel posto verde','Freccia… dov’era la freccia? Ah, ecco! ➡️']],
- parkover:[['L’hai superato! Torna indietro: tieni premuto FRENO da ferma per la retromarcia','Retromarcia… beep beep 🚗']],
+ park:[['Ultima prova: parcheggio! Rallenta, metti la freccia e fermati nel posto verde con la P','Freccia… dov’era la freccia? Ah, ecco! ➡️']],
+ parkover:[['Hai superato il posto verde! Fermati, metti la R e torna indietro piano piano','Retromarcia… beep beep 🚗']],
  noind:[['Hai dimenticato la freccia! Prima di parcheggiare si mette sempre','Uffa, lo sapevo! 🙈']],
  barrier:[['Attenta alla sbarra!!','Ahh! Scusa scusa! 😱']],
  honk:[['Il clacson solo se serve, eh 😂','Beep beep! 📯 Arriva Lapapa!',1],['Ma a chi suoni? 😂','Permesso! Sto facendo l’esame! 📯',1]],
@@ -1574,15 +1582,17 @@ const S_BUNNY=mkSprite(["..w...w..","..wp..wp.","..w...w..",".wwwwwww.","wwkwwwk
 function isDrv(){return solo||myChar==='lapapa'}
 function drvDriver(){return solo?bears[0]:(myChar==='lapapa'?bears[0]:remote)}
 function drvInstr(){return solo?bears[1]:(myChar==='atata'?bears[0]:remote)}
-function initDrive(){drv={x:150,v:0,ind:false,indUsed:false,err:0,errs:[],by:0,bv:0,rot:0,done:false,doneT:0,parkT:0,evId:0,ev:null,flags:{},z30T:0,fastT:0,fastN:0,revT:0,ped:{st:0,t0:0},stopDone:false,waited:{},ambT:20,honkCd:0,jH:false,aH:false,brkOn:false,brkSaid:0,autoBrk:false,front0:172,started:false,resPlanned:false};
+function initDrive(){drv={gear:'D',thH:false,x:150,v:0,ind:false,indUsed:false,err:0,errs:[],by:0,bv:0,rot:0,done:false,doneT:0,parkT:0,evId:0,ev:null,flags:{},z30T:0,fastT:0,fastN:0,revT:0,ped:{st:0,t0:0},stopDone:false,waited:{},ambT:20,honkCd:0,jH:false,aH:false,brkOn:false,brkSaid:0,autoBrk:false,front0:172,started:false,resPlanned:false};
   $('bT').style.display='none';$('bS').style.display='none';
-  if(isDrv()){$('bL').innerHTML='🦶<br>FRENO';$('bR').innerHTML='GAS<br>▶';$('bJ').innerHTML='📯<br>CLACSON';$('bA').innerHTML='➡<br>FRECCIA';
-    setTimeout(()=>{if(mode==='play'&&drv)toast(isTouch?'Guida tu! GAS ▶ per andare, FRENO per frenare (da ferma: retromarcia), ➡ freccia, 📯 clacson':'Guida tu! → gas · ← freno (da ferma: retromarcia) · S freccia · spazio clacson',6)},400)}
-  else{for(const id of ['bL','bR','bJ'])$(id).style.display='none';$('bA').innerHTML='🦶<br>FRENO';
+  if(isDrv()){$('touch').classList.add('drive');$('bT').style.display='';$('bL').innerHTML='🦶<small>FRENO</small>';$('bR').innerHTML='⛽<small>GAS</small>';$('bJ').innerHTML='📯';$('bA').innerHTML='➡️<small>freccia</small>';drvGearLbl();
+    setTimeout(()=>{if(mode==='play'&&drv)toast(isTouch?'Guida tu! GAS a destra, FRENO a sinistra. Il tasto D/R cambia marcia (R = retromarcia)':'Guida tu! → gas · ← freno · R marcia avanti/retro · S freccia · spazio clacson',6)},400)}
+  else{$('touch').classList.add('drive-i');for(const id of ['bL','bR','bJ'])$(id).style.display='none';$('bA').innerHTML='🦶<small>FRENO</small>';
     setTimeout(()=>{if(mode==='play'&&drv)toast('Guida Lapapa! Tu sei l’istruttore: tieni premuto 🦶 FRENO (o S / ↓) per frenare con i doppi comandi',6)},400)}
   for(const b of bears){b.goal=false;b.vx=0}
   setTimeout(()=>{if(mode==='play'&&drv&&isDrv())drvEv('start')},1100)}
-function drvPres(){const d=drv;const o={e:d.err,ind:d.ind?1:0,ev:d.ev,done:d.done?1:0,pd:d.ped.st===1?Math.round(performance.now()-d.ped.t0):d.ped.st===2?-2:-1};if(d.done)o.res=drvResult();return o}
+for(const [id,f] of [['bT','thTap'],['bA','aTap']])document.getElementById(id).addEventListener('pointerdown',()=>{if(L&&L.kind==='drive'&&drv&&isDrv()&&mode==='play')drv[f]=true});
+function drvGearLbl(){$('bT').innerHTML=(drv&&drv.gear==='R'?'R':'D')+'<small>'+(drv&&drv.gear==='R'?'retro':'avanti')+'</small>'}
+function drvPres(){const d=drv;const o={g:d.gear,e:d.err,ind:d.ind?1:0,ev:d.ev,done:d.done?1:0,pd:d.ped.st===1?Math.round(performance.now()-d.ped.t0):d.ped.st===2?-2:-1};if(d.done)o.res=drvResult();return o}
 function drvResult(){return {e:drv.err,list:drv.errs.slice()}}
 function speakPair(k,i){const tb=DRV_L[k];if(!tb)return;const pr=tb[i%tb.length];if(!pr)return;const [a,l,lf]=pr;const A=drvInstr(),Lp=drvDriver();
   const first=lf?['lapapa',l,Lp]:['atata',a,A],second=lf?['atata',a,A]:['lapapa',l,Lp];const now=performance.now();convCd=now+9000;for(const [,bb] of bubs)bb.until=0;
@@ -1605,10 +1615,11 @@ function updateDrive(dt){const d=drv;if(!d)return;const now=performance.now();if
     const instr=solo?d.autoBrk:!!(remote&&remote.vis&&remote.brk);
     if(instr&&!d.brkOn&&!solo&&now-d.brkSaid>9000){d.brkSaid=now}
     d.brkOn=instr;
-    if(brk){if(d.v>1)d.v=Math.max(0,d.v-260*dt);else{d.revT+=dt;if(d.revT>.35){d.v=Math.max(-45,d.v-70*dt);if(Math.floor(now/400)%2&&Math.random()<dt*6)tone(1500,.05,'square',.02)}}}else d.revT=0;
-    if(!brk&&d.v<0)d.v=Math.min(0,d.v+90*dt);
-    if(gas&&d.v>=-1){d.v=Math.min(140,d.v+(d.v<60?95:45)*dt)}else if(!brk&&d.v>0)d.v=Math.max(0,d.v-28*dt);
-    if(gas&&d.v<-1)d.v=Math.min(0,d.v+200*dt);
+    if(((keys.th&&!d.thH)||d.thTap)&&!d.done){d.thTap=false;if(Math.abs(d.v)<4){d.v=0;d.gear=d.gear==='D'?'R':'D';drvGearLbl();tone(d.gear==='R'?500:800,.08,'square',.04);toast(d.gear==='R'?'Retromarcia R ⬅ (premi GAS per andare indietro)':'Marcia avanti D ➡',1.6)}else toast('Fermati prima di cambiare marcia ✋',1.4)}d.thH=keys.th;
+    if(brk){if(d.v>0)d.v=Math.max(0,d.v-260*dt);else if(d.v<0)d.v=Math.min(0,d.v+260*dt)}
+    if(gas&&d.gear==='D'){if(d.v<0)d.v=Math.min(0,d.v+200*dt);else d.v=Math.min(140,d.v+(d.v<60?95:45)*dt)}
+    else if(gas&&d.gear==='R'){if(d.v>0)d.v=Math.max(0,d.v-200*dt);else{d.v=Math.max(-50,d.v-80*dt);if(Math.random()<dt*3)tone(1500,.05,'square',.02)}}
+    else if(!brk){if(d.v>0)d.v=Math.max(0,d.v-28*dt);else if(d.v<0)d.v=Math.min(0,d.v+60*dt)}
     if(instr&&d.v>0)d.v=Math.max(0,d.v-330*dt);
     // pedone
     if(d.ped.st===0&&d.x+22>P.ped-240){d.ped.st=1;d.ped.t0=now;drvEv('ped')}
@@ -1618,7 +1629,7 @@ function updateDrive(dt){const d=drv;if(!d)return;const now=performance.now();if
     d.x+=d.v*dt;
     if(pedOnRoad()){const lim=P.ped-18-22;if(d.x>lim&&d.x-22<P.ped+16&&prevFront<=P.ped-17){if(d.v>5&&!d.errs.includes('ped')){drvErr('ped');drvEv('pedhit')}d.x=lim;d.v=0;d.bv-=30}}
     if(d.x<120){d.x=120;d.v=Math.max(0,d.v)}
-    if(d.x+22>P.barrier){d.x=P.barrier-22;if(d.v>20&&!d.errs.includes('barrier')){drvErr('barrier');drvEv('barrier');d.bv-=60;burst(P.barrier,150,'#ffffff',10)}d.v=0}
+    if(d.x+22>P.barrier){d.x=P.barrier-22;if(d.v>5)drvEv('parkover');if(d.v>75&&!d.errs.includes('barrier')){drvErr('barrier');drvEv('barrier');d.bv-=60;burst(P.barrier,150,'#ffffff',10)}d.v=0}
     const front=d.x+22,kh=kmh();
     if(!d.started&&d.v>25){d.started=true;setTimeout(()=>{if(mode==='play'&&d.x<P.z30[0]-60)drvEv('go')},300)}
     // zona 30
@@ -1637,13 +1648,13 @@ function updateDrive(dt){const d=drv;if(!d)return;const now=performance.now();if
     // parcheggio
     if(front>P.parkSign-60)drvEv('park');if(d.ind&&front>P.parkSign-120)d.indUsed=true;
     if(d.x>P.spot[1]+30)drvEv('parkover');
-    const inSpot=d.x>P.spot[0]+4&&d.x<P.spot[1]-4;
+    const inSpot=d.x>P.spot[0]+10&&d.x<P.spot[1]-10;
     if(inSpot&&Math.abs(d.v)<2&&!d.done){d.parkT+=dt;if(d.parkT>1){d.done=true;d.doneT=now;d.v=0;if(!d.indUsed){drvErr('ind');drvEv('noind')}
         bears[0].goal=true;SFX.goal();const pass=d.err<=3;setTimeout(()=>{if(mode==='play')drvEv(d.err===0?'perfect':pass?'pass':'fail')},d.indUsed?900:3200);
         if(pass)for(let i=0;i<6;i++)setTimeout(()=>burst(d.x-30+Math.random()*60,120,['#f5c542','#e8475f','#38c8f0','#5cc35a'][i%4],18),1500+i*200)}}else d.parkT=0;
     // clacson e freccia
     d.honkCd-=dt;if(keys.jump&&!d.jH&&d.honkCd<=0){d.honkCd=1;tone(440,.18,'square',.05);tone(554,.18,'square',.04);floatAt(bears[0],'📯',1,8);if(Math.random()<.35&&now>convCd)drvEv('honk','h'+Math.floor(now/1000),true)}d.jH=keys.jump;
-    if(keys.ab&&!d.aH&&!d.done){d.ind=!d.ind;tone(1100,.03,'square',.03);toast(d.ind?'Freccia accesa ➡':'Freccia spenta',1)}d.aH=keys.ab;
+    if(((keys.ab&&!d.aH)||d.aTap)&&!d.done){d.aTap=false;d.ind=!d.ind;tone(1100,.03,'square',.03);toast(d.ind?'Freccia accesa ➡':'Freccia spenta',1)}d.aH=keys.ab;
     // chiacchiere
     if(Math.abs(d.v)>30&&now>convCd){d.ambT-=dt;if(d.ambT<=0){d.ambT=24+Math.random()*12;drvEv('amb','a'+Math.floor(now),true)}}
     bears[0].x=d.x+6;bears[0].vx=d.v;bears[0].face=1;
@@ -1651,7 +1662,7 @@ function updateDrive(dt){const d=drv;if(!d)return;const now=performance.now();if
     if(d.done&&!d.resPlanned){d.resPlanned=true;setTimeout(()=>{if(mode==='play'||mode==='pause')showResults()},(d.indUsed?900:3200)+6500)}
   }else{
     // istruttore online: la macchina segue la posizione di Lapapa
-    if(remote&&remote.vis){const nx=remote.x-6;d.v=remote.vx||0;d.x=nx;const dv=remote.dv||{};d.ind=!!dv.ind;d.err=dv.e||0;
+    if(remote&&remote.vis){const nx=remote.x-6;d.v=remote.vx||0;d.x=nx;const dv=remote.dv||{};d.ind=!!dv.ind;d.gear=dv.g||'D';d.err=dv.e||0;
       if(dv.done&&!d.resPlanned){d.resPlanned=true;d.done=true;setTimeout(()=>{if(mode==='play'||mode==='pause')showResults()},9500)}}
     for(const bx of P.bumps){const fr=d.x+22;if(prevFront<bx&&fr>=bx)d.bv-=12+Math.abs(d.v)*.6}
     const pressing=keys.ab||keys.left;if(pressing&&!d.brkOn&&now-d.brkSaid>9000&&d.v>20){d.brkSaid=now;showBubble('b0',bears[0],'Freno io! Doppi comandi 🦶','atata');mySay={id:++sayN,t:'Freno io! Doppi comandi 🦶',rt:'Ehi! Volevo frenare io! 😤',ts:Date.now()};sendPresence(true)}d.brkOn=pressing;
@@ -1728,9 +1739,13 @@ function drawDrive(time){const d=drv;if(!d)return;const P=DRV_P;ctx.save();if(sh
   drSign(P.stop+6,'stop');{const sx=P.stop-cam;ctx.fillStyle='#f6f2ea';ctx.fillRect(sx,154,3,16);ctx.font='bold 7px monospace';ctx.textAlign='center';ctx.fillText('STOP',sx-14,166)}
   drSign(P.bumps[0]-140,'tri','⌒');for(const bx of P.bumps){const sx=bx-cam;for(let i=0;i<6;i++){ctx.fillStyle=i%2?'#2a2a33':'#f5c542';ctx.fillRect(sx-9+i*3,166,3,3)}ctx.fillStyle='#3a3a44';ctx.fillRect(sx-9,165,18,1)}
   drSign(P.parkSign,'blue','P');
-  for(let sxw=P.spot[0]-160;sxw<P.barrier-40;sxw+=54){const sx=sxw-cam;const tgt=sxw===P.spot[0];ctx.strokeStyle=tgt?(Math.floor(time*3)%2?'#5cff8a':'#2fd06a'):'#f6f2ea';ctx.lineWidth=tgt?2:1;ctx.strokeRect(sx+1,155,52,14);
-    if(tgt){ctx.fillStyle='rgba(92,255,138,.18)';ctx.fillRect(sx+1,155,52,14);ctx.fillStyle='#2fd06a';ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.fillText('P',sx+27,166)}}
-  {const sx=P.barrier-cam;ctx.fillStyle='#6a6a74';ctx.fillRect(sx+2,138,4,32);for(let i=0;i<5;i++){ctx.fillStyle=i%2?'#ffffff':'#e8475f';ctx.fillRect(sx-30+i*7,142,7,4)}}
+  {const sw=P.spot[1]-P.spot[0];for(let k=-3;k<=4;k++){if(k===0)continue;const sx=P.spot[0]+k*sw-cam;if(sx>-sw&&sx<VW&&P.spot[0]+k*sw<P.barrier-30){ctx.strokeStyle='#f6f2ea';ctx.lineWidth=1;ctx.strokeRect(sx+1,155,sw-2,14)}}
+   const sx=P.spot[0]-cam,pul=Math.floor(time*3)%2;ctx.fillStyle='rgba(60,230,110,.45)';ctx.fillRect(sx+1,154,sw-2,16);ctx.strokeStyle=pul?'#7dffa4':'#1fbf55';ctx.lineWidth=2;ctx.strokeRect(sx+1,154,sw-2,16);
+   ctx.fillStyle='#ffffff';ctx.font='bold 11px monospace';ctx.textAlign='center';ctx.fillText('P',sx+sw/2,166);
+   const by=Math.round(Math.sin(time*5)*3);ctx.fillStyle='#6a6a74';ctx.fillRect(sx+sw/2-1,100,2,26);ctx.fillStyle='#2fb05a';ctx.fillRect(sx+sw/2-22,78+by,44,20);ctx.fillStyle='#ffffff';ctx.font='bold 8px monospace';ctx.fillText('🅿️ QUI',sx+sw/2,91+by);
+   ctx.fillStyle='#2fb05a';ctx.beginPath();ctx.moveTo(sx+sw/2-6,100+by);ctx.lineTo(sx+sw/2+6,100+by);ctx.lineTo(sx+sw/2,107+by);ctx.fill();
+   for(const ax of [P.parkSign+40,P.parkSign+100]){const a=ax-cam;ctx.fillStyle='rgba(255,255,255,.8)';ctx.font='bold 9px monospace';ctx.fillText('P ➜',a,165)}}
+  {const sx=P.barrier-cam;drSign(P.barrier+14,'blue','⛔');ctx.fillStyle='#6a6a74';ctx.fillRect(sx+2,138,4,32);for(let i=0;i<5;i++){ctx.fillStyle=i%2?'#ffffff':'#e8475f';ctx.fillRect(sx-30+i*7,142,7,4)}}
   const pk=pedProg(),bunnyFront=pk>.5;if(!bunnyFront)drawBunny(time);
   drawCar(Math.round(d.x-cam),d.by,time);
   if(bunnyFront)drawBunny(time);
@@ -1740,9 +1755,10 @@ function drawDrive(time){const d=drv;if(!d)return;const P=DRV_P;ctx.save();if(sh
   ctx.fillStyle='rgba(20,20,30,.72)';ctx.fillRect(VW/2-78,19,156,22);ctx.fillStyle=over?'#ff7a8a':'#ffffff';ctx.font='bold 11px monospace';ctx.textAlign='left';ctx.fillText(kh+' km/h',VW/2-72,34);
   ctx.fillStyle='#e8475f';ctx.beginPath();ctx.arc(VW/2-4,30,8,0,7);ctx.fill();ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(VW/2-4,30,6,0,7);ctx.fill();ctx.fillStyle='#2a2a33';ctx.font='bold 7px monospace';ctx.textAlign='center';ctx.fillText(lim,VW/2-4,33);
   ctx.textAlign='left';ctx.font='bold 9px monospace';ctx.fillStyle=d.err>3?'#ff7a8a':d.err?'#ffd27a':'#9affb0';ctx.fillText('Errori '+d.err,VW/2+8,34);
-  if(d.ind){ctx.fillStyle=Math.floor(time*3)%2?'#ffa630':'#6a4a20';ctx.fillText('➡',VW/2+60,34)}
+  if(d.ind){ctx.fillStyle=Math.floor(time*3)%2?'#ffa630':'#6a4a20';ctx.fillText('➡',VW/2+58,34)}
+  ctx.fillStyle=d.gear==='R'?'#ffd27a':'#9affb0';ctx.font='bold 10px monospace';ctx.textAlign='center';ctx.fillText(d.gear||'D',VW/2+72,34);
   if(d.brkOn){ctx.fillStyle='#ff7a8a';ctx.font='bold 7px monospace';ctx.textAlign='center';ctx.fillText('🦶 DOPPI COMANDI',VW/2,49)}
-  const task=front<P.z30[0]-40?'Prima guida! GAS per partire, FRENO per frenare':front<P.z30[1]?'Zona scuola: massimo 30 km/h 🏫':front<P.light1+20?'Semaforo: col rosso fermati prima della linea 🚦':front<P.ped+40?'Strisce pedonali: dai la precedenza 🐰':front<P.stop+20?'STOP: fermati del tutto prima della linea':front<P.bumps[1]+20?'Dossi: passa sotto i 25 km/h':front<P.light2+20?'Ancora un semaforo 🚦':d.done?'Esame finito!':'Parcheggio: freccia ➡ e fermati nel posto verde P';
+  const task=front<P.z30[0]-40?'Prima guida! GAS per partire, FRENO per frenare':front<P.z30[1]?'Zona scuola: massimo 30 km/h 🏫':front<P.light1+20?'Semaforo: col rosso fermati prima della linea 🚦':front<P.ped+40?'Strisce pedonali: dai la precedenza 🐰':front<P.stop+20?'STOP: fermati del tutto prima della linea':front<P.bumps[1]+20?'Dossi: passa sotto i 25 km/h':front<P.light2+20?'Ancora un semaforo 🚦':d.done?'Esame finito!':(()=>{const c=(P.spot[0]+P.spot[1])/2,dd=c-d.x;if(dd>14)return '🅿️ Posto verde tra '+Math.max(1,Math.round(dd/8))+' m ➡ rallenta e metti la freccia';if(dd<-14)return '⬅ Hai superato il posto verde: fermati, premi D/R per la retromarcia e torna indietro';return 'Ferma qui! ✋ Sei nel posto verde';})();
   ctx.font='7px sans-serif';const tw=ctx.measureText(task).width;ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(VW/2-tw/2-5,52,tw+10,11);ctx.fillStyle='#2a2a33';ctx.textAlign='center';ctx.fillText(task,VW/2,60);
   // patente!
   const res=isDrv()?d:(remote&&remote.dv)||{};const doneT=isDrv()?d.doneT:(d.done?d.doneT||(d.doneT=performance.now()):0);
@@ -2009,7 +2025,7 @@ window.__game={sprites,parseOut,get drv(){return drv},get bears(){return bears},
 })();
 </script>
 <script>
-(function(){var BUILD='1795029786';
+(function(){var BUILD='1795037310';
   function check(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){
     if(!j||!j.v||j.v===BUILD)return;var k='al_reloaded_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}
     location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
