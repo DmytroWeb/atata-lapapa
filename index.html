@@ -665,7 +665,8 @@ function startLevel(i){
 let idleT=0,farT=0,cudT=0,protCd=6,ambT=20;
 let myEmo=null,lastRemoteEmo=0,emoN=0,abT=0,hugDone=false,reviveCd=0,myLetter='',letterGot=new Set();
 const floaters=[];
-const DEF_LETTERS=['Ogni passo con te è un’avventura ♥','Anche nel bosco più buio, con te ho sempre la luce','Con te mi sento sempre sulle nuvole','Sei la mia estate tutto l’anno','Sei il cristallo più prezioso che ho mai trovato','Tra tutte le stelle del cielo, scelgo sempre te','Anche nel freddo più freddo, con te ho sempre il cuore caldo','In qualsiasi futuro, io voglio essere con te','Sei l’unico incantesimo a cui non voglio sfuggire 🎃','Grazie di prenderti sempre cura di me, anche nei giorni no ♥','Tanti auguri amore mio: con te ogni giorno è una festa ♥','Goditi il tuo Lapapa time: sei bellissima sempre, con o senza smalto ♥','La giornata più bella è quella passata con te ☀️','Il mio regalo di Natale più bello sei tu, oggi e per sempre 🎄♥','Andrei ovunque con te… anche se guidi tu 🚗♥'];
+const DEF_LETTERS=['Ogni passo con te è un’avventura ♥','Anche nel bosco più buio, con te ho sempre la luce','Con te mi sento sempre sulle nuvole','Sei la mia estate tutto l’anno','Sei il cristallo più prezioso che ho mai trovato','Tra tutte le stelle del cielo, scelgo sempre te','Anche nel freddo più freddo, con te ho sempre il cuore caldo','In qualsiasi futuro, io voglio essere con te','Sei l’unico incantesimo a cui non voglio sfuggire 🎃','Grazie di prenderti sempre cura di me, anche nei giorni no ♥','Tanti auguri amore mio: con te ogni giorno è una festa ♥','Goditi il tuo Lapapa time: sei bellissima sempre, con o senza smalto ♥','La giornata più bella è quella passata con te ☀️','Il mio regalo di Natale più bello sei tu, oggi e per sempre 🎄♥','Andrei ovunque con te… anche se guidi tu 🚗♥','La valigia più importante? Quella dove ci sei tu ♥ Si parte! 🧳','Bratislava è bellissima, ma tu di più 🇸🇰♥','Vienna, il valzer, la torta… e tu: il viaggio perfetto 🎡♥'];
+const LETTER_POOL=['Sei il mio posto preferito nel mondo ♥','Con te anche le cose piccole diventano speciali','Grazie di esistere, amore mio','Ogni giorno con te è il mio giorno fortunato 🍀','Sei la risposta a tutte le mie preghiere ♥','Ti sceglierei ancora, ogni singola volta','Il mio cuore fa le capriole quando ti vedo 💓','Sei casa, ovunque siamo'];
 function lettersFor(c){const a=store.get('letters_for_'+c);return Array.isArray(a)?a:[]}
 let specStart=0,npcT=22,sunsetT=0;
 function startSunset(){sunsetT=performance.now();const A=bears.find(b=>b.c==='atata')||(remote&&remote.c==='atata'?remote:null),Lp=bears.find(b=>b.c==='lapapa')||(remote&&remote.c==='lapapa'?remote:null);
@@ -1078,7 +1079,7 @@ $('bLetOk').onclick=()=>{saveLetters();mode='menu';showScreen('sMenu');refreshMe
 function openLetter(b){
   let text='',from=CHARS[other(b.c)].name;
   if(solo)text=lettersFor(b.c)[lvIdx]||'';else text=(remote&&remote.lt)||'';
-  const isDef=!text;if(isDef){text=DEF_LETTERS[lvIdx]||'Ti voglio bene ♥'}
+  const isDef=!text;if(isDef){text=DEF_LETTERS[lvIdx]||LETTER_POOL[lvIdx%LETTER_POOL.length]}
   $('letTitle').textContent=isDef?'Una letterina per '+CHARS[b.c].name:'Una letterina da '+from+' ♥';$('letText').textContent=text;
   SFX.goal();mode='letter';showScreen('sLetter');
 }
@@ -2221,7 +2222,7 @@ window.__game={sprites,parseOut,get drv(){return drv},get bears(){return bears},
 })();
 </script>
 <script>
-(function(){var BUILD='1795367460';
+(function(){var BUILD='1795375540';
   function check(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){
     if(!j||!j.v||j.v===BUILD)return;var k='al_reloaded_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}
     location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
